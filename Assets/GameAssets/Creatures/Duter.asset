@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b1d1f8b3dd671244b142b30880ec28b, type: 3}
+  m_Name: Duter
+  m_EditorClassIdentifier: 
+  _frontSprite: {fileID: -5295611603592848501, guid: 0f2c31acf2bde3643bfbd6e95d13454c, type: 3}
+  _backSprite: {fileID: -3047732480404014537, guid: 79d8882220a1c5c4f86ff42468b7b3b0, type: 3}
+  <Name>k__BackingField: DUTER
+  <Type>k__BackingField: {fileID: 11400000, guid: 0e0e0e724fc66f84e8d731552d1f2306, type: 2}
+  <Attacks>k__BackingField:
+  - {fileID: 11400000, guid: 97020359ba7eced4e8685e3e885032b7, type: 2}
+  - {fileID: 11400000, guid: 92c7d74c9eb63a24d8836123b69d9eb9, type: 2}
+  - {fileID: 11400000, guid: 6ef023063459a0c40b30e6149dbb2481, type: 2}
+  - {fileID: 11400000, guid: b6858e33c2039984f9ca45ed40db5921, type: 2}
+  <HP>k__BackingField: 25
+  <Attack>k__BackingField: 3
+  <Defense>k__BackingField: 8
+  <Speed>k__BackingField: 1

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 159189829d04bba46b3e67f3e444a610
+guid: 8d889b2a3989304458286b0ced97252d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7354900847682429574
-    second: Fire_Back_0
+      213: 5287466719543503194
+    second: Health_Box_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Fire_Back_0
+      name: Health_Box_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        width: 400
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a7d5baf95a42ee990800000000000000
-      internalID: -7354900847682429574
+      spriteID: a59271c97fad06940800000000000000
+      internalID: 5287466719543503194
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: c67fba6dc5413734faff49a3ea07ae6a
+    spriteID: d534b5c823a71bc419c148c9e06080a3
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Fire_Back_0: -7354900847682429574
+      Health_Box_0: 5287466719543503194
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

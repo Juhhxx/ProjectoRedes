@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b1d1f8b3dd671244b142b30880ec28b, type: 3}
+  m_Name: Grassilly
+  m_EditorClassIdentifier: 
+  _frontSprite: {fileID: 977229222461406403, guid: 2583090479dee4d4f92b4ce46858a8e6, type: 3}
+  _backSprite: {fileID: -6025134869873124116, guid: eccbe4d8036ed3f42a0ca07a4f017327, type: 3}
+  <Name>k__BackingField: GRASSILLY
+  <Type>k__BackingField: {fileID: 11400000, guid: 3c13095b177911945b66ff1ac341ca05, type: 2}
+  <Attacks>k__BackingField:
+  - {fileID: 11400000, guid: 97020359ba7eced4e8685e3e885032b7, type: 2}
+  - {fileID: 11400000, guid: 92c7d74c9eb63a24d8836123b69d9eb9, type: 2}
+  - {fileID: 11400000, guid: 6ef023063459a0c40b30e6149dbb2481, type: 2}
+  - {fileID: 11400000, guid: b6858e33c2039984f9ca45ed40db5921, type: 2}
+  <HP>k__BackingField: 15
+  <Attack>k__BackingField: 3
+  <Defense>k__BackingField: 5
+  <Speed>k__BackingField: 5
