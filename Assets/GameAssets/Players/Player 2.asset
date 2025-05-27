@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: xGAMERx
   Level: 3
-  Creature: {fileID: 11400000, guid: 978a40861f840f04e83ebed360524c23, type: 2}
+  CreatureData: {fileID: 11400000, guid: 978a40861f840f04e83ebed360524c23, type: 2}

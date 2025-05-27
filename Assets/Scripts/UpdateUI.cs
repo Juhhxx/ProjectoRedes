@@ -17,6 +17,7 @@ public class UpdateUI : MonoBehaviour
     [Header("UI References")]
     [Space(5f)]
     [SerializeField] private EventSystem _eventSystem;
+    [SerializeField] private DialogueManager _dialogueManager;
 
     [Space(10f)]
     [Header("Player UI References")]
@@ -43,11 +44,20 @@ public class UpdateUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _enemyHP;
     [SerializeField] private TextMeshProUGUI _enemyOwner;
 
-    private GameObject _lastSelected;
+    // [Space(10f)]
+    // [Header("Animation References")]
+    // [Space(5f)]
+    // [SerializeField] private Animator _battleMenuAnimator;
 
-    private void Start()
+    private GameObject _lastSelected;
+    private BattleManager _battleManager;
+
+    public void StartUI(BattleManager manager)
     {
+        Debug.Log("UI CONFIGURED");
         Cursor.lockState = CursorLockMode.Locked;
+
+        _battleManager = manager;
 
         SetUpBattleUI();
     }
@@ -75,6 +85,14 @@ public class UpdateUI : MonoBehaviour
         _enemyName.text = _enemy?.Creature?.Name;
         _enemyHP.text = $"{_enemy?.Creature?.HP} / {_enemy?.Creature?.HP}";
         _enemyOwner.text = $"{_enemy?.Name} Lv. {_enemy?.Level}";
+
+        // Set up text
+
+        if (Application.isPlaying)
+        {
+            _dialogueManager.AddDialogue($"What will {_player.Creature.Name} do?");
+            _dialogueManager.StartDialogues();
+        }
     }
 
     private void SetUpAttacks()
@@ -83,7 +101,10 @@ public class UpdateUI : MonoBehaviour
         {
             Button atkButton = _attacks.transform.GetChild(0).GetChild(0).GetChild(i).GetComponent<Button>();
 
-            // atkButton.onClick.AddListener(() => ShowAttackInfo(_player?.Creature?.Attacks[i]));
+            atkButton.onClick.AddListener(() => _battleManager
+                                                .RegisterAction(
+                                                _player.Creature
+                                                .CurrentAttackSet[i]));
 
             atkButton.GetComponentInChildren<TextMeshProUGUI>().text = $"> {_player?.Creature?.Attacks[i]?.name}";
         }
@@ -101,14 +122,20 @@ public class UpdateUI : MonoBehaviour
             ShowAttackInfo(_player.Creature.Attacks[idx]);
         }
     }
+    // public void OpenMenu(string menuName) => _battleMenuAnimator.SetBool($"{menuName}Open", true);
     private void CheckCloseMenu()
     {
         if (_attacks.activeInHierarchy || _stats.activeInHierarchy)
         {
             if (Input.GetButtonDown("Quit"))
             {
-                _attacks.SetActive(false);
-                _stats.SetActive(false);
+                _eventSystem.sendNavigationEvents = true;
+
+                // if (_attacks.activeInHierarchy) _battleMenuAnimator.SetTrigger("AttacksClose");
+                // else                            _battleMenuAnimator.SetTrigger("StatsClose");
+                if (_attacks.activeInHierarchy) _attacks.SetActive(false);
+                else _stats.SetActive(false);
+
                 _eventSystem.SetSelectedGameObject(_lastSelected);
             }
         }
