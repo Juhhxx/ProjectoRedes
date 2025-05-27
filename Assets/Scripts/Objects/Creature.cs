@@ -1,5 +1,6 @@
 using UnityEngine;
 using NaughtyAttributes;
+using System.Collections.Generic;
 
 [CreateAssetMenu(fileName = "Creature", menuName = "Scriptable Objects/Creature")]
 public class Creature : ScriptableObject
@@ -10,7 +11,7 @@ public class Creature : ScriptableObject
     public Sprite BackSprite => _backSprite;
     [field: SerializeField] public string Name { get; private set; }
     [field: SerializeField] public Type Type { get; private set; }
-    [field: SerializeField] public Attack[] Attacks { get; private set; }
+    [field: SerializeField] public List<Attack> Attacks { get; private set; }
     [field: SerializeField] public int HP { get; private set; }
     [field: SerializeField] public int Attack { get; private set; }
     [field: SerializeField] public int Defense { get; private set; }
@@ -18,7 +19,10 @@ public class Creature : ScriptableObject
 
     private int _currentHP;
     public int CurrentHP => _currentHP;
-    private Attack[] _currentAttackSet;
+    private Attack[] _currentAttackSet = new Attack[4];
+    public Attack[] CurrentAttackSet => _currentAttackSet;
+
+    public void AddAttack(int id, Attack attack) => _currentAttackSet[id] = attack;
 
     public Creature CreateCreature() => Instantiate(this);
 }

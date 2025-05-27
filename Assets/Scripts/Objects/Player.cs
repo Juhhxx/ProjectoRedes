@@ -6,8 +6,16 @@ public class Player : ScriptableObject
 {
     [field: SerializeField] public string Name;
     [field: SerializeField] public int Level;
-    [OnValueChanged("CopyCreature")][field: SerializeField] public Creature Creature;
+    [OnValueChanged("CopyCreature")][field: SerializeField] public Creature CreatureData;
 
-    private void CopyCreature() => Creature = Creature.CreateCreature();
-    
+    private Creature _creature;
+    public Creature Creature
+    {
+        get
+        {
+            if (_creature == null) _creature = CreatureData.CreateCreature();
+
+            return _creature;
+        }
+    }
 }
