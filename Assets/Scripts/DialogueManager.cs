@@ -14,8 +14,9 @@ public class DialogueManager : MonoBehaviour
     private YieldInstruction _wfs;
     private YieldInstruction _wff;
     private WaitForKeyDown _wfk;
+    private bool _dialoguePlaying;
 
-    private void Start()
+    public void SetUpDialogueManager()
     {
         _dialogueQueue = new Queue<string>();
         _wfs = new WaitForSeconds(_textSpeed);
@@ -24,10 +25,26 @@ public class DialogueManager : MonoBehaviour
     }
 
     public void AddDialogue(string dialogue) => _dialogueQueue.Enqueue(dialogue);
-    public void StartDialogues() => StartCoroutine(PlayDialogues());
+    public void StartDialogues()
+    {
+        StopAllCoroutines();
+        StartCoroutine(PlayDialogues());
+    }
+    public void StartDialogues(string dialogue)
+    {
+        StopAllCoroutines();
+        AddDialogue(dialogue);
+        StartCoroutine(PlayDialogues());
+    }
+    public bool CheckDialogEnd()
+    {
+        return !_dialoguePlaying;
+    }
 
     private IEnumerator PlayDialogues()
     {
+        _dialoguePlaying = true;
+
         int size = _dialogueQueue.Count;
         int i = 0;
 
@@ -37,24 +54,28 @@ public class DialogueManager : MonoBehaviour
 
             _dialogueBox.text = "";
 
+            yield return _wff;
+
             foreach (char c in dialogue)
             {
-                _dialogueBox.text += c;
-
-                if (Input.GetButtonDown(_jumpKey))
+                if (Input.GetButtonDown("Submit"))
                 {
                     _dialogueBox.text = dialogue;
                     break;
                 }
 
+                _dialogueBox.text += c;
+
                 yield return _wfs;
             }
 
             yield return _wff;
-            yield return _wfk;
+            if (_dialogueQueue.Count > 0) yield return _wfk;
             yield return _wff;
 
             i++;
         }
+
+        _dialoguePlaying = false;
     }
 }

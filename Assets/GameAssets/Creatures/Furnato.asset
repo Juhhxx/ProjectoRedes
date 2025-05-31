@@ -18,10 +18,10 @@ MonoBehaviour:
   <Type>k__BackingField: {fileID: 11400000, guid: 6050b9a141ecb9b468e92d8c20fa2a53, type: 2}
   <Attacks>k__BackingField:
   - {fileID: 11400000, guid: 97020359ba7eced4e8685e3e885032b7, type: 2}
+  - {fileID: 11400000, guid: b6858e33c2039984f9ca45ed40db5921, type: 2}
   - {fileID: 11400000, guid: 92c7d74c9eb63a24d8836123b69d9eb9, type: 2}
   - {fileID: 11400000, guid: 6ef023063459a0c40b30e6149dbb2481, type: 2}
-  - {fileID: 11400000, guid: b6858e33c2039984f9ca45ed40db5921, type: 2}
-  <HP>k__BackingField: 20
-  <Attack>k__BackingField: 7
-  <Defense>k__BackingField: 3
-  <Speed>k__BackingField: 3
+  <HP>k__BackingField: 25
+  <Attack>k__BackingField: 70
+  <Defense>k__BackingField: 55
+  <Speed>k__BackingField: 50

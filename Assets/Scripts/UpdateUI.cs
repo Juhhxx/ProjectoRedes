@@ -8,10 +8,7 @@ using System;
 
 public class UpdateUI : MonoBehaviour
 {
-    [Header("Debug Values")]
-    [Space(5f)]
-    [OnValueChanged("SetUpBattleUI")][SerializeField] private Player _player;
-    [OnValueChanged("SetUpBattleUI")][SerializeField] private Player _enemy;
+    private Player _player, _enemy;
 
     [Space(10f)]
     [Header("UI References")]
@@ -28,6 +25,8 @@ public class UpdateUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _playerName;
     [SerializeField] private TextMeshProUGUI _playerHP;
     [SerializeField] private TextMeshProUGUI _playerOwner;
+    [SerializeField] private RectTransform _battleText;
+    [SerializeField] private GameObject _actions;
     [SerializeField] private GameObject _attacks;
     [SerializeField] private TextMeshProUGUI _attackInfo;
     [SerializeField] private Image _attackType;
@@ -44,6 +43,13 @@ public class UpdateUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _enemyHP;
     [SerializeField] private TextMeshProUGUI _enemyOwner;
 
+    [Space(10f)]
+    [Header("HP Bars References")]
+    [Space(5f)]
+    [SerializeField] private Color _fullHPColor;
+    [SerializeField] private Color _halfHPColor;
+    [SerializeField] private Color _lowHPColor;
+
     // [Space(10f)]
     // [Header("Animation References")]
     // [Space(5f)]
@@ -52,30 +58,38 @@ public class UpdateUI : MonoBehaviour
     private GameObject _lastSelected;
     private BattleManager _battleManager;
 
-    public void StartUI(BattleManager manager)
-    {
-        Debug.Log("UI CONFIGURED");
-        Cursor.lockState = CursorLockMode.Locked;
-
-        _battleManager = manager;
-
-        SetUpBattleUI();
-    }
     private void Update()
     {
         CheckButtonSelected();
         CheckCloseMenu();
     }
 
-    public void SetUpBattleUI()
+    public void SetUpUI(BattleManager manager)
+    {
+        Debug.Log("UI CONFIGURED");
+        Cursor.lockState = CursorLockMode.Locked;
+
+        _battleManager = manager;
+
+        _player = _battleManager.P1;
+        _enemy = _battleManager.P2;
+
+        Debug.Log($"PLAYER : {_player.Creature.Name}");
+        Debug.Log($"ENEMY : {_enemy.Creature.Name}");
+
+        SetUpBattleUI();
+    }
+    private void SetUpBattleUI()
     {
         // Setup Player UI
         _playerSprite.sprite = _player?.Creature?.BackSprite;
         _playerTypeSprite.sprite = _player?.Creature?.Type?.Sprite;
         _playerName.text = _player?.Creature?.Name;
+        _playerHPBar.color = _fullHPColor;
         _playerHP.text = $"{_player?.Creature?.HP} / {_player?.Creature?.HP}";
         _playerOwner.text = $"{_player?.Name} Lv. {_player?.Level}";
         _playerStats.text = $"ATK : {_player?.Creature?.Attack} DEF : {_player?.Creature?.Defense} SPD : {_player?.Creature?.Speed}";
+        _player.Creature.OnDamageTaken += () => UpdateHPBars();
 
         SetUpAttacks();
 
@@ -83,30 +97,33 @@ public class UpdateUI : MonoBehaviour
         _enemySprite.sprite = _enemy?.Creature?.FrontSprite;
         _enemyTypeSprite.sprite = _enemy?.Creature?.Type?.Sprite;
         _enemyName.text = _enemy?.Creature?.Name;
+        _enemyHPBar.color = _fullHPColor;
         _enemyHP.text = $"{_enemy?.Creature?.HP} / {_enemy?.Creature?.HP}";
         _enemyOwner.text = $"{_enemy?.Name} Lv. {_enemy?.Level}";
+        _enemy.Creature.OnDamageTaken += () => UpdateHPBars();
 
         // Set up text
 
-        if (Application.isPlaying)
-        {
-            _dialogueManager.AddDialogue($"What will {_player.Creature.Name} do?");
-            _dialogueManager.StartDialogues();
-        }
+        _lastSelected = _actions.transform.GetChild(1).GetChild(0).gameObject;
+        if (Application.isPlaying) SetUpActionScene();
     }
-
     private void SetUpAttacks()
     {
         for (int i = 0; i < 4; i++)
         {
-            Button atkButton = _attacks.transform.GetChild(0).GetChild(0).GetChild(i).GetComponent<Button>();
+            Button atkButton = _attacks.transform.GetChild(0)
+                                                 .GetChild(0)
+                                                 .GetChild(i)
+                                                 .GetComponent<Button>();
 
-            atkButton.onClick.AddListener(() => _battleManager
-                                                .RegisterAction(
-                                                _player.Creature
-                                                .CurrentAttackSet[i]));
+            Attack attack = _player.Creature.CurrentAttackSet[i];
 
-            atkButton.GetComponentInChildren<TextMeshProUGUI>().text = $"> {_player?.Creature?.Attacks[i]?.name}";
+            Debug.LogWarning($"{attack.Name} was Regsitred for {attack.Attacker.Name}");
+
+            atkButton.onClick.AddListener(() => SetUpBattleScene());
+            atkButton.onClick.AddListener(() => _battleManager?.RegisterAction(attack));
+
+            atkButton.GetComponentInChildren<TextMeshProUGUI>().text = $"> {attack.Name}";
         }
     }
     private void ShowAttackInfo(Attack attack)
@@ -121,8 +138,11 @@ public class UpdateUI : MonoBehaviour
             int idx = _eventSystem.currentSelectedGameObject.transform.GetSiblingIndex();
             ShowAttackInfo(_player.Creature.Attacks[idx]);
         }
+        else if (_actions.activeInHierarchy)
+        {
+            _lastSelected = _eventSystem.currentSelectedGameObject;
+        }
     }
-    // public void OpenMenu(string menuName) => _battleMenuAnimator.SetBool($"{menuName}Open", true);
     private void CheckCloseMenu()
     {
         if (_attacks.activeInHierarchy || _stats.activeInHierarchy)
@@ -131,24 +151,41 @@ public class UpdateUI : MonoBehaviour
             {
                 _eventSystem.sendNavigationEvents = true;
 
-                // if (_attacks.activeInHierarchy) _battleMenuAnimator.SetTrigger("AttacksClose");
-                // else                            _battleMenuAnimator.SetTrigger("StatsClose");
                 if (_attacks.activeInHierarchy) _attacks.SetActive(false);
                 else _stats.SetActive(false);
 
                 _eventSystem.SetSelectedGameObject(_lastSelected);
             }
         }
-        else
-        {
-            _lastSelected = _eventSystem.currentSelectedGameObject;
-        }
     }
 
+    public void SetUpBattleScene()
+    {
+        _actions.SetActive(false);
+        _attacks.SetActive(false);
+        _battleText.sizeDelta = new Vector2(500f, _battleText.rect.height);
+    }
+    public void SetUpActionScene()
+    {
+        Debug.Log(_lastSelected.name);
+        _actions.SetActive(true);
+        _eventSystem.SetSelectedGameObject(_lastSelected);
+        _battleText.sizeDelta = new Vector2(360f, _battleText.rect.height);
+        _dialogueManager.StartDialogues($"What will {_player?.Creature?.Name} do?");
+    }
     public void UpdateHPBars()
     {
         _playerHPBar.fillAmount = _player.Creature.CurrentHP / _player.Creature.HP;
+        _playerHP.text = $"{_player.Creature.CurrentHP:f0} / {_player.Creature.HP:f0}";
+
+        if (_playerHPBar.fillAmount <= 0.25f) _playerHPBar.color = _lowHPColor;
+        else if (_playerHPBar.fillAmount <= 0.5f) _playerHPBar.color = _halfHPColor;
+
         _enemyHPBar.fillAmount = _enemy.Creature.CurrentHP / _enemy.Creature.HP;
+        _enemyHP.text = $"{_enemy.Creature.CurrentHP:f0} / {_enemy.Creature.HP:f0}";
+
+        if (_enemyHPBar.fillAmount <= 0.25f) _enemyHPBar.color = _lowHPColor;
+        else if (_enemyHPBar.fillAmount <= 0.5f) _enemyHPBar.color = _halfHPColor;
     }
     public void JumpToButton(Selectable button)
     {

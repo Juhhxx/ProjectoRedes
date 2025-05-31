@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Attack 2
   m_EditorClassIdentifier: 
   Name: ATTACK3
-  Power: 10
+  Power: 40
   PP: 20
   Accuracy: 80
   Type: {fileID: 11400000, guid: 3c13095b177911945b66ff1ac341ca05, type: 2}

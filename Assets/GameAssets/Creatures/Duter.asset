@@ -21,7 +21,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 92c7d74c9eb63a24d8836123b69d9eb9, type: 2}
   - {fileID: 11400000, guid: 6ef023063459a0c40b30e6149dbb2481, type: 2}
   - {fileID: 11400000, guid: b6858e33c2039984f9ca45ed40db5921, type: 2}
-  <HP>k__BackingField: 25
-  <Attack>k__BackingField: 3
-  <Defense>k__BackingField: 8
-  <Speed>k__BackingField: 1
+  <HP>k__BackingField: 30
+  <Attack>k__BackingField: 50
+  <Defense>k__BackingField: 75
+  <Speed>k__BackingField: 50
