@@ -47,7 +47,11 @@ public class BattleManager : MonoBehaviour
 
         Debug.Log(damage);
 
-        if (damage > 0) StartCoroutine(defender.ApplyDamage(damage));
+        if (damage > 0)
+        {
+            StartCoroutine(defender.ApplyDamage(damage));
+            attack.Attacker.Animator.SetTrigger("Attack");
+        }
     }
 
     private IEnumerator Test()

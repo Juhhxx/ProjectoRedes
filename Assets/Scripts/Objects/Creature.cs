@@ -27,6 +27,9 @@ public class Creature : ScriptableObject
     public float CurrentHP => _currentHP;
     private Attack[] _currentAttackSet = new Attack[4];
     public Attack[] CurrentAttackSet => _currentAttackSet;
+    private Animator _anim;
+    public Animator Animator => _anim;
+    public void SetAnimator(Animator anim) => _anim = anim;
 
     private YieldInstruction _wff = new WaitForEndOfFrame();
 

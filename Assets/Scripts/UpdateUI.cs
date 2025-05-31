@@ -32,6 +32,7 @@ public class UpdateUI : MonoBehaviour
     [SerializeField] private Image _attackType;
     [SerializeField] private GameObject _stats;
     [SerializeField] private TextMeshProUGUI _playerStats;
+    [SerializeField] private Animator _playerAnim;
 
     [Space(10f)]
     [Header("Enemy UI References")]
@@ -42,6 +43,7 @@ public class UpdateUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _enemyName;
     [SerializeField] private TextMeshProUGUI _enemyHP;
     [SerializeField] private TextMeshProUGUI _enemyOwner;
+    [SerializeField] private Animator _enemyAnim;
 
     [Space(10f)]
     [Header("HP Bars References")]
@@ -90,6 +92,7 @@ public class UpdateUI : MonoBehaviour
         _playerOwner.text = $"{_player?.Name} Lv. {_player?.Level}";
         _playerStats.text = $"ATK : {_player?.Creature?.Attack} DEF : {_player?.Creature?.Defense} SPD : {_player?.Creature?.Speed}";
         _player.Creature.OnDamageTaken += () => UpdateHPBars();
+        _player.Creature.SetAnimator(_playerAnim);
 
         SetUpAttacks();
 
@@ -101,6 +104,7 @@ public class UpdateUI : MonoBehaviour
         _enemyHP.text = $"{_enemy?.Creature?.HP} / {_enemy?.Creature?.HP}";
         _enemyOwner.text = $"{_enemy?.Name} Lv. {_enemy?.Level}";
         _enemy.Creature.OnDamageTaken += () => UpdateHPBars();
+        _enemy.Creature.SetAnimator(_enemyAnim);
 
         // Set up text
 
