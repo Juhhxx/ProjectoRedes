@@ -93,6 +93,7 @@ public class UpdateUI : MonoBehaviour
         _playerStats.text = $"ATK : {_player?.Creature?.Attack} DEF : {_player?.Creature?.Defense} SPD : {_player?.Creature?.Speed}";
         _player.Creature.OnDamageTaken += () => UpdateHPBars();
         _player.Creature.SetAnimator(_playerAnim);
+        _player.Creature.SetDialogueManager(_dialogueManager);
 
         SetUpAttacks();
 
@@ -105,11 +106,16 @@ public class UpdateUI : MonoBehaviour
         _enemyOwner.text = $"{_enemy?.Name} Lv. {_enemy?.Level}";
         _enemy.Creature.OnDamageTaken += () => UpdateHPBars();
         _enemy.Creature.SetAnimator(_enemyAnim);
+        _enemy.Creature.SetDialogueManager(_dialogueManager);
 
         // Set up text
 
         _lastSelected = _actions.transform.GetChild(1).GetChild(0).gameObject;
         if (Application.isPlaying) SetUpActionScene();
+    }
+    private void UpdateBattleUI()
+    {
+        _playerStats.text = $"ATK : {_player?.Creature?.Attack} DEF : {_player?.Creature?.Defense} SPD : {_player?.Creature?.Speed}";
     }
     private void SetUpAttacks()
     {
@@ -132,7 +138,7 @@ public class UpdateUI : MonoBehaviour
     }
     private void ShowAttackInfo(Attack attack)
     {
-        _attackInfo.text = $"{attack.CurrenPP}/{attack.PP}\n{attack.Accuracy}";
+        _attackInfo.text = $"{attack.Power}\n{attack.Accuracy}";
         _attackType.sprite = attack.Type.Sprite;
     }
     private void CheckButtonSelected()
@@ -140,7 +146,7 @@ public class UpdateUI : MonoBehaviour
         if (_attacks.activeInHierarchy)
         {
             int idx = _eventSystem.currentSelectedGameObject.transform.GetSiblingIndex();
-            ShowAttackInfo(_player.Creature.Attacks[idx]);
+            ShowAttackInfo(_player.Creature.CurrentAttackSet[idx]);
         }
         else if (_actions.activeInHierarchy)
         {
@@ -173,6 +179,7 @@ public class UpdateUI : MonoBehaviour
     {
         Debug.Log(_lastSelected.name);
         _actions.SetActive(true);
+        UpdateBattleUI();
         _eventSystem.SetSelectedGameObject(_lastSelected);
         _battleText.sizeDelta = new Vector2(360f, _battleText.rect.height);
         _dialogueManager.StartDialogues($"What will {_player?.Creature?.Name} do?");

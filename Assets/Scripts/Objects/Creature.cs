@@ -14,10 +14,47 @@ public class Creature : ScriptableObject
     [field: SerializeField] public string Name { get; private set; }
     [field: SerializeField] public Type Type { get; private set; }
     [field: SerializeField] public List<Attack> Attacks { get; private set; }
-    [field: SerializeField] public float HP { get; private set; }
-    [field: SerializeField] public int Attack { get; private set; }
-    [field: SerializeField] public int Defense { get; private set; }
-    [field: SerializeField] public int Speed { get; private set; }
+    [field: SerializeField] public float BaseHP { get; private set; }
+    [field: SerializeField] public int BaseAttack { get; private set; }
+    [field: SerializeField] public int BaseDefense { get; private set; }
+    [field: SerializeField] public int BaseSpeed { get; private set; }
+
+    public float HP => BaseHP + (_owner?.Level * 2).Value;
+    public int Attack => BaseAttack + (_owner?.Level * 2).Value + GetModifierBonus(Stats.Attack);
+    public int Defense => BaseDefense + (_owner?.Level * 2).Value + GetModifierBonus(Stats.Defense);
+    public int Speed => BaseSpeed + (_owner?.Level * 2).Value + GetModifierBonus(Stats.Speed);
+    private int _currentTurn;
+    public void SetTurn(int turn) => _currentTurn = turn;
+
+    private List<StatModifier> _statModifiers = new List<StatModifier>();
+    public void AddModifier(Attack owner, StatModifier modifier)
+    {
+        _statModifiers.Add(modifier);
+        _dialogue.AddDialogue(owner.GetAttackMessage());
+        _dialogue.AddDialogue($"{Name} upped it's {modifier.Stat} !");
+    }
+    public void CheckModifier()
+    {
+        foreach (StatModifier m in _statModifiers)
+        {
+            m.TurnPass();
+        }
+
+        _statModifiers.RemoveAll(m => m.CheckDone());
+    }
+    private int GetModifierBonus(Stats stat)
+    {
+        if (_statModifiers.Count == 0) return 0;
+
+        int bonus = 0;
+
+        foreach (StatModifier m in _statModifiers)
+        {
+            if (m.Stat == stat) bonus += m.Amount;
+        }
+
+        return bonus;
+    }
 
     public event Action OnDamageTaken;
 
@@ -30,10 +67,19 @@ public class Creature : ScriptableObject
     private Animator _anim;
     public Animator Animator => _anim;
     public void SetAnimator(Animator anim) => _anim = anim;
+    private DialogueManager _dialogue;
+    public void SetDialogueManager(DialogueManager dialogue) => _dialogue = dialogue;
 
     private YieldInstruction _wff = new WaitForEndOfFrame();
 
     public void SetOwner(Player owner) => _owner = owner;
+    public void SetOpponent(Creature opponent)
+    {
+        foreach (Attack a in _currentAttackSet)
+        {
+            a.SetTarget(opponent);
+        }
+    }
     public void AddAttack(int id, Attack attack)
     {
         Attack newAttack = attack.CreateAttack();
@@ -42,14 +88,15 @@ public class Creature : ScriptableObject
         newAttack.SetAttacker(this);
     }
     public void SetHP(float hp) => _currentHP = hp;
-    public float TakeDamage(Attack attack, DialogueManager dialogue)
+
+    public float TakeDamage(Attack attack)
     {
         Debug.Log($"{attack.Attacker.Name} used {attack.Name} on {Name}");
         int rnd = UnityEngine.Random.Range(1, 100);
 
         if (rnd > attack.Accuracy)
         {
-            dialogue.AddDialogue($"{attack.Attacker.Name} missed...");
+            _dialogue.AddDialogue($"{attack.Attacker.Name} missed...");
 
             return 0f;
         }
@@ -60,11 +107,9 @@ public class Creature : ScriptableObject
 
         attack.Used();
 
-        dialogue.AddDialogue(attack.GetAttackMessage());
-        if (attack.GetEffectiveness(Type) > 1.0f) dialogue.AddDialogue("It's super effective...");
-        else if (attack.GetEffectiveness(Type) < 1.0f) dialogue.AddDialogue("It's not very effective...");
-
-        // OnDamageTaken?.Invoke();
+        _dialogue.AddDialogue(attack.GetAttackMessage());
+        if (attack.GetEffectiveness(Type) > 1.0f) _dialogue.AddDialogue("It's super effective!!!");
+        else if (attack.GetEffectiveness(Type) < 1.0f) _dialogue.AddDialogue("It's not very effective...");
 
         return damage;
     }
@@ -73,9 +118,11 @@ public class Creature : ScriptableObject
         float rnd = UnityEngine.Random.Range(217, 255);
         rnd /= 255;
 
-        return (((((2 * attack.Attacker.Owner.Level * attack.CriticalChance()) / 5)
-                    * attack.Power * (attack.Attacker.Attack / Defense)) / 50) + 2)
-                    * attack.GetSTAB() * attack.GetEffectiveness(Type) * rnd;
+        float damage = (((((2 * attack.Attacker.Owner.Level * attack.CriticalChance()) / 5)
+                        * attack.Power * (attack.Attacker.Attack / Defense)) / 50) + 2)
+                        * attack.GetSTAB() * attack.GetEffectiveness(Type) * rnd;
+
+        return Mathf.Ceil(damage);
     }
     public IEnumerator ApplyDamage(float damage)
     {
@@ -100,8 +147,8 @@ public class Creature : ScriptableObject
     {
         Creature newC = Instantiate(this);
 
-        newC.SetHP(HP);
         newC.SetOwner(owner);
+        newC.SetHP(newC.HP);
 
         // Temporary
         for (int i = 0; i < 4; i++)

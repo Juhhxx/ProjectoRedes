@@ -14,6 +14,18 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private UpdateUI _ui;
     [SerializeField] private DialogueManager _dialogueManager;
     private List<Attack> _playerActions;
+    public event Action OnTurnPassed;
+    private int _turn;
+    public int Turn
+    {
+        get => _turn;
+
+        private set
+        {
+            OnTurnPassed?.Invoke();
+            _turn = value;
+        }
+    }
 
     private WaitForDialogueEnd _wfd;
 
@@ -21,12 +33,23 @@ public class BattleManager : MonoBehaviour
     {
         p1.SetUpPlayer();
         p2.SetUpPlayer();
+
+        p1.Creature.SetOpponent(p2.Creature);
+        p2.Creature.SetOpponent(p1.Creature);
+
+        OnTurnPassed += () => p1.Creature.SetTurn(Turn);
+        OnTurnPassed += () => p1.Creature.CheckModifier();
+
+        OnTurnPassed += () => p2.Creature.SetTurn(Turn);
+        OnTurnPassed += () => p2.Creature.CheckModifier();
     }
     private void Start()
     {
         _playerActions = new List<Attack>();
         _dialogueManager.SetUpDialogueManager();
         _ui.SetUpUI(this);
+
+        OnTurnPassed += () => Debug.Log($"TURN {Turn}");
 
         _wfd = new WaitForDialogueEnd(_dialogueManager);
     }
@@ -39,17 +62,15 @@ public class BattleManager : MonoBehaviour
 
         StartCoroutine(Test());
     }
-    private void DoAttack(Attack attack, Creature defender)
+    private void DoAttack(Attack attack)
     {
-        Debug.Log($"ATTACK {attack.Name} from {attack.Attacker.Name}");
-
-        float damage = defender.TakeDamage(attack, _dialogueManager);
+        float damage = attack.DoAttack();
 
         Debug.Log(damage);
 
         if (damage > 0)
         {
-            StartCoroutine(defender.ApplyDamage(damage));
+            StartCoroutine(attack.Target.ApplyDamage(damage));
             attack.Attacker.Animator.SetTrigger("Attack");
         }
     }
@@ -58,7 +79,7 @@ public class BattleManager : MonoBehaviour
     {
         yield return new WaitForSeconds(5f);
 
-        DoAttack(_playerActions[0], p2.Creature);
+        DoAttack(_playerActions[0]);
 
         _dialogueManager.StartDialogues();
 
@@ -68,6 +89,7 @@ public class BattleManager : MonoBehaviour
 
         _ui.SetUpActionScene();
         _playerActions.Clear();
+        Turn++;
     }
     public IEnumerator BattleStart()
     {
