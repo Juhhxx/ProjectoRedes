@@ -8,7 +8,7 @@ public class WaitForPlayerActions : CustomYieldInstruction
     {
         get
         {
-            return _checkPlayerActions();
+            return !_checkPlayerActions();
         }
     }
 

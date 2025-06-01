@@ -29,9 +29,16 @@ public class Creature : ScriptableObject
     private List<StatModifier> _statModifiers = new List<StatModifier>();
     public void AddModifier(Attack owner, StatModifier modifier)
     {
+        string message = "";
         _statModifiers.Add(modifier);
         _dialogue.AddDialogue(owner.GetAttackMessage());
-        _dialogue.AddDialogue($"{Name} upped it's {modifier.Stat} !");
+
+        message += $"{Name}'s {modifier.Stat}";
+
+        if (modifier.Amount > 0) message += "\nrose !";
+        else message += "\nfell !";
+
+        _dialogue.AddDialogue(message);
     }
     public void CheckModifier()
     {
@@ -110,6 +117,8 @@ public class Creature : ScriptableObject
         _dialogue.AddDialogue(attack.GetAttackMessage());
         if (attack.GetEffectiveness(Type) > 1.0f) _dialogue.AddDialogue("It's super effective!!!");
         else if (attack.GetEffectiveness(Type) < 1.0f) _dialogue.AddDialogue("It's not very effective...");
+
+        if (damage > 0) Animator.SetTrigger("Attack");
 
         return damage;
     }

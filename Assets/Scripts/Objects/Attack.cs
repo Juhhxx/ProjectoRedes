@@ -8,11 +8,14 @@ public class Attack : ScriptableObject
 {
     [field: SerializeField] public string Name;
     [field: SerializeField] public AttackType AttackType;
-    [ShowIf("AttackType", AttackType.Physical)][field: SerializeField] public int Power;
-    [ShowIf("AttackType", AttackType.Physical)][field: SerializeField] public int Accuracy;
-    [ShowIf("AttackType", AttackType.StatBooster)][field: SerializeField] public List<Stats> Stat;
-    [ShowIf("AttackType", AttackType.StatBooster)][field: SerializeField] public float AmountPercent;
-    [ShowIf("AttackType", AttackType.StatBooster)][field: SerializeField] public int TurnDuration;
+    private bool IsStatModifier => AttackType != AttackType.Physical;
+    [ShowIf("IsStatModifier")][field: SerializeField] public int Power;
+    [HideIf("IsStatModifier")][field: SerializeField] public int Accuracy;
+    [ShowIf("IsStatModifier")][field: SerializeField] public List<Stats> Stat;
+    [ShowIf("IsStatModifier")][field: SerializeField] public float AmountPercent;
+    [ShowIf("IsStatModifier")][field: SerializeField] public bool Randomize;
+    [ShowIf("Randomize")][field: SerializeField] public float RandomChance;
+    [ShowIf("IsStatModifier")][field: SerializeField] public int TurnDuration;
     [field: SerializeField] public int PP;
     [field: SerializeField] public Type Type;
     [field: SerializeField] public string Description;
@@ -49,7 +52,11 @@ public class Attack : ScriptableObject
                 return DoDamage();
 
             case AttackType.StatBooster:
-                AddModifier();
+                AddModifier(false);
+                break;
+            
+            case AttackType.StatNerfer:
+                AddModifier(true);
                 break;
         }
 
@@ -63,31 +70,60 @@ public class Attack : ScriptableObject
 
         return damage;
     }
-    private void AddModifier()
+    private void AddModifier(bool negative)
     {
         foreach (Stats s in Stat)
         {
-            int amount = 0;
+            (Stats stat, int amount) = GetModifierAmount(s);
 
-            switch (s)
+            if (Randomize)
             {
-                case Stats.Attack:
-                    amount += (int)(Attacker.Attack * AmountPercent);
-                    break;
+                float rand = Random.Range(0f,1f);
 
-                case Stats.Defense:
-                    amount += (int)(Attacker.Defense * AmountPercent);
-                    break;
+                if (rand <= RandomChance) amount = -amount;
 
-                case Stats.Speed:
-                    amount += (int)(Attacker.Speed * AmountPercent);
-                    break;
+                Debug.Log($"{rand} <= {RandomChance}");
+                Debug.Log($"negative? {rand <= RandomChance} Amount {amount}");
             }
 
-            StatModifier mod = new(s, amount, TurnDuration);
+            if (!negative)
+            {
+                StatModifier mod = new(stat, amount, TurnDuration);
 
-            Attacker.AddModifier(this, mod);
+                Attacker.AddModifier(this, mod);
+            }
+            else
+            {
+                StatModifier mod = new(stat, -amount, TurnDuration);
+
+                Target.AddModifier(this, mod);
+            }
         }
+    }
+    private (Stats,int) GetModifierAmount(Stats stat)
+    {
+        (Stats, int) value = (stat, 0);
+
+        switch (stat)
+        {
+            case Stats.Attack:
+                value.Item2 = (int)(Attacker.Attack * AmountPercent);
+                break;
+
+            case Stats.Defense:
+                value.Item2 = (int)(Attacker.Defense * AmountPercent);
+                break;
+
+            case Stats.Speed:
+                value.Item2 = (int)(Attacker.Speed * AmountPercent);
+                break;
+
+            case Stats.Random:
+                value = GetModifierAmount(stat.GetRandomStat());
+                break;
+        }
+
+        return value;
     }
     public float GetEffectiveness(Type target)
     {
@@ -108,7 +144,7 @@ public class Attack : ScriptableObject
         else return 1.0f;
     }
 
-    public string GetAttackMessage() => $"{Attacker.Name,-7} used {Name} !";
+    public string GetAttackMessage() => $"{Attacker.Name} used \n{Name} !";
 
     public Attack CreateAttack()
     {

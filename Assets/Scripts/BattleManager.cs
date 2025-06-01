@@ -52,15 +52,23 @@ public class BattleManager : MonoBehaviour
         OnTurnPassed += () => Debug.Log($"TURN {Turn}");
 
         _wfd = new WaitForDialogueEnd(_dialogueManager);
+
+        StartCoroutine(Test());
+    }
+    private void Update()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1 + i))
+            {
+                RegisterAction(p2.Creature.CurrentAttackSet[i]);
+            }
+        }
     }
 
     public void RegisterAction(Attack attack)
     {
         _playerActions.Add(attack);
-
-        _dialogueManager.StartDialogues($"Waiting for {p2.Name}'s action...");
-
-        StartCoroutine(Test());
     }
     private void DoAttack(Attack attack)
     {
@@ -71,25 +79,41 @@ public class BattleManager : MonoBehaviour
         if (damage > 0)
         {
             StartCoroutine(attack.Target.ApplyDamage(damage));
-            attack.Attacker.Animator.SetTrigger("Attack");
         }
     }
 
     private IEnumerator Test()
     {
-        yield return new WaitForSeconds(5f);
+        while (true)
+        {
+            yield return new WaitForPlayerActions(() => _playerActions.Count == 1);
 
-        DoAttack(_playerActions[0]);
+            _dialogueManager.StartDialogues($"Waiting for {p2.Name}'s action...");
 
-        _dialogueManager.StartDialogues();
+            yield return new WaitForPlayerActions(() => _playerActions.Count == _actionsListSize);
 
-        yield return _wfd;
+            OrganizeActions();
 
-        yield return new WaitForKeyDown("Submit");
+            yield return new WaitForEndOfFrame();
 
-        _ui.SetUpActionScene();
-        _playerActions.Clear();
-        Turn++;
+            DoAttack(_playerActions[0]);
+
+            _dialogueManager.StartDialogues();
+
+            yield return _wfd;
+
+            DoAttack(_playerActions[1]);
+
+            _dialogueManager.StartDialogues();
+
+            yield return _wfd;
+
+            yield return new WaitForKeyDown("Submit");
+
+            _ui.SetUpActionScene();
+            _playerActions.Clear();
+            Turn++;
+        }
     }
     public IEnumerator BattleStart()
     {

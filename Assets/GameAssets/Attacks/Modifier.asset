@@ -16,8 +16,10 @@ MonoBehaviour:
   AttackType: 1
   Power: 40
   Accuracy: 80
-  Stat: 00000000
+  Stat: 03000000
   AmountPercent: 0.5
+  Randomize: 1
+  RandomChance: 0.5
   TurnDuration: 2
   PP: 20
   Type: {fileID: 11400000, guid: 0e0e0e724fc66f84e8d731552d1f2306, type: 2}
