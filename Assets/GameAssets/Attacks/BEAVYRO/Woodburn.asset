@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: WOODBURN
   AttackType: 1
   Power: 0
-  Accuracy: 0
+  Accuracy: 100
   CritRate: 25
   HasRecoil: 0
   Stat: 00000000

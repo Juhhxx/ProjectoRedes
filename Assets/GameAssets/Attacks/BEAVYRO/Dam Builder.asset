@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: DAM BUILDER
   AttackType: 1
   Power: 0
-  Accuracy: 0
+  Accuracy: 100
   CritRate: 25
   HasRecoil: 0
   Stat: 01000000
@@ -23,8 +23,8 @@ MonoBehaviour:
   Randomize: 0
   RandomChance: 0
   TurnDuration: 3
-  PP: 0
-  Type: {fileID: 11400000, guid: 6050b9a141ecb9b468e92d8c20fa2a53, type: 2}
-  LevelUnlocked: 10
+  PP: 10
+  Type: {fileID: 11400000, guid: 0e0e0e724fc66f84e8d731552d1f2306, type: 2}
+  LevelUnlocked: 0
   Description: The user builds a small dam around them. Raises the user's Defense
     by 3 turns.

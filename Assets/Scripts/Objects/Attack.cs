@@ -9,8 +9,8 @@ public class Attack : ScriptableObject
     [field: SerializeField] public string Name;
     [field: SerializeField] public AttackType AttackType;
     private bool IsStatModifier => AttackType != AttackType.Physical;
-    [HideIf("IsStatModifier")][field: SerializeField] public int Power;
-    [HideIf("IsStatModifier")][field: SerializeField] public int Accuracy;
+    [HideIf("IsStatModifier")][field: SerializeField] public int Power = 0;
+    [HideIf("IsStatModifier")][field: SerializeField] public int Accuracy = 100;
     [HideIf("IsStatModifier")][field: SerializeField] public int CritRate = 25;
     [HideIf("IsStatModifier")][field: SerializeField] public bool HasRecoil;
     [ShowIf("IsStatModifier")][field: SerializeField] public List<Stats> Stat;
@@ -33,12 +33,6 @@ public class Attack : ScriptableObject
     public void SetAttacker(Creature creature)
     {
         _attacker = creature;
-
-        if (AttackType == AttackType.StatBooster)
-        {
-            Power = 0;
-            Accuracy = 100;
-        }
     }
     public void SetTarget(Creature creature)
     {

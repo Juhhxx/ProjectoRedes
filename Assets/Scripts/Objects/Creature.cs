@@ -80,8 +80,8 @@ public class Creature : ScriptableObject
     public Player Owner => _owner;
     private float _currentHP;
     public float CurrentHP => _currentHP;
-    private Attack[] _currentAttackSet = new Attack[4];
-    public Attack[] CurrentAttackSet => _currentAttackSet;
+    private List<Attack> _currentAttackSet = new List<Attack>();
+    public List<Attack> CurrentAttackSet => _currentAttackSet;
     private Animator _anim;
     public Animator Animator => _anim;
     public void SetAnimator(Animator anim) => _anim = anim;
@@ -98,12 +98,17 @@ public class Creature : ScriptableObject
             a.SetTarget(opponent);
         }
     }
-    public void AddAttack(int id, Attack attack)
+    public void AddAttack(Attack attack)
     {
         Attack newAttack = attack.CreateAttack();
 
-        _currentAttackSet[id] = newAttack;
+        _currentAttackSet.Add(newAttack);
+        
         newAttack.SetAttacker(this);
+    }
+    public void RemoveAttack(Attack attack)
+    {
+        _currentAttackSet.Remove(attack);
     }
     public void SetHP(float hp) => _currentHP = hp;
 
@@ -177,12 +182,12 @@ public class Creature : ScriptableObject
         newC.SetHP(newC.HP);
 
         // Temporary
-        for (int i = 0; i < 4; i++)
-        {
-            Debug.Log($"{Attacks[i].Name} n{i} to {Name} ({name})");
-            Debug.Log(i);
-            newC.AddAttack(i, Attacks[i]);
-        }
+        // for (int i = 0; i < 4; i++)
+        // {
+        //     Debug.Log($"{Attacks[i].Name} n{i} to {Name} ({name})");
+        //     Debug.Log(i);
+        //     newC.AddAttack(Attacks[i]);
+        // }
 
         return newC;
     }

@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: SPLINTER SPIT
   AttackType: 2
   Power: 0
-  Accuracy: 0
+  Accuracy: 100
   CritRate: 25
   HasRecoil: 0
   Stat: 01000000
