@@ -10,18 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e927fea733ca412498deeeaf7f423d17, type: 3}
-  m_Name: Modifier
+  m_Name: Timber
   m_EditorClassIdentifier: 
-  Name: MODIFIER1
-  AttackType: 1
+  Name: TIMBER
+  AttackType: 0
   Power: 40
-  Accuracy: 80
+  Accuracy: 85
+  CritRate: 25
   HasRecoil: 0
-  Stat: 03000000
-  AmountPercent: 0.5
-  Randomize: 1
-  RandomChance: 0.5
-  TurnDuration: 2
+  Stat: 
+  AmountPercent: 0
+  Randomize: 0
+  RandomChance: 0
+  TurnDuration: 0
   PP: 20
-  Type: {fileID: 11400000, guid: 0e0e0e724fc66f84e8d731552d1f2306, type: 2}
-  Description: 
+  Type: {fileID: 11400000, guid: 3c13095b177911945b66ff1ac341ca05, type: 2}
+  LevelUnlocked: 0
+  Description: The user cruches all the wood around it.

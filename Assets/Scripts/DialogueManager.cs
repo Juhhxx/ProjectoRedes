@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
@@ -10,7 +11,7 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private float _textSpeed;
     [SerializeField][InputAxis] private string _jumpKey;
 
-    private Queue<string> _dialogueQueue;
+    private Queue<DialogueEvent> _dialogueQueue;
     private YieldInstruction _wfs;
     private YieldInstruction _wff;
     private WaitForKeyDown _wfk;
@@ -18,13 +19,17 @@ public class DialogueManager : MonoBehaviour
 
     public void SetUpDialogueManager()
     {
-        _dialogueQueue = new Queue<string>();
+        _dialogueQueue = new Queue<DialogueEvent>();
         _wfs = new WaitForSeconds(_textSpeed);
         _wff = new WaitForEndOfFrame();
         _wfk = new WaitForKeyDown(_jumpKey);
     }
 
-    public void AddDialogue(string dialogue) => _dialogueQueue.Enqueue(dialogue);
+    public void AddDialogue(string dialogue, Action action = null)
+    {
+        DialogueEvent d = new DialogueEvent(dialogue, action);
+        _dialogueQueue.Enqueue(d);
+    }
     public void StartDialogues()
     {
         StopAllCoroutines();
@@ -50,7 +55,9 @@ public class DialogueManager : MonoBehaviour
 
         while (i < size)
         {
-            string dialogue = _dialogueQueue.Dequeue();
+            (string dialogue, Action action) = _dialogueQueue.Dequeue().GetValues();
+
+            action?.Invoke();
 
             _dialogueBox.text = "";
 

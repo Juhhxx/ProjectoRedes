@@ -3953,8 +3953,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fa5d888e51972543bcd39f5c0dad823, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  p1: {fileID: 11400000, guid: 34c40075fe2be8a46924690be245d27c, type: 2}
-  p2: {fileID: 11400000, guid: 9b5dd85e8665a414a9d79d143cd1216d, type: 2}
+  p1: {fileID: 11400000, guid: 9b5dd85e8665a414a9d79d143cd1216d, type: 2}
+  p2: {fileID: 11400000, guid: 34c40075fe2be8a46924690be245d27c, type: 2}
   _actionsListSize: 2
   _ui: {fileID: 364834369}
   _dialogueManager: {fileID: 364834370}

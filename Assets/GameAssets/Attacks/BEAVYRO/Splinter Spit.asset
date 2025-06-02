@@ -10,18 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e927fea733ca412498deeeaf7f423d17, type: 3}
-  m_Name: Modifier 1
+  m_Name: Splinter Spit
   m_EditorClassIdentifier: 
-  Name: MODIFIER1
+  Name: SPLINTER SPIT
   AttackType: 2
-  Power: 40
-  Accuracy: 80
+  Power: 0
+  Accuracy: 0
+  CritRate: 25
   HasRecoil: 0
-  Stat: 02000000
-  AmountPercent: 0.5
+  Stat: 01000000
+  AmountPercent: 0.33
   Randomize: 0
-  RandomChance: 0.5
-  TurnDuration: 2
-  PP: 20
-  Type: {fileID: 11400000, guid: 0e0e0e724fc66f84e8d731552d1f2306, type: 2}
-  Description: 
+  RandomChance: 0
+  TurnDuration: 3
+  PP: 5
+  Type: {fileID: 11400000, guid: 6050b9a141ecb9b468e92d8c20fa2a53, type: 2}
+  LevelUnlocked: 0
+  Description: The user chews some wood and spit out splinters all around. Lowers
+    the enemy's Defense by 3 turns.

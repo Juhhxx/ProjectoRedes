@@ -10,18 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e927fea733ca412498deeeaf7f423d17, type: 3}
-  m_Name: Attack 3
+  m_Name: Woodburn
   m_EditorClassIdentifier: 
-  Name: ATTACK4
-  AttackType: 0
-  Power: 40
-  Accuracy: 80
-  HasRecoil: 1
-  Stat: 
-  AmountPercent: 0
+  Name: WOODBURN
+  AttackType: 1
+  Power: 0
+  Accuracy: 0
+  CritRate: 25
+  HasRecoil: 0
+  Stat: 00000000
+  AmountPercent: 0.33
   Randomize: 0
   RandomChance: 0
-  TurnDuration: 0
-  PP: 20
-  Type: {fileID: 11400000, guid: 0e0e0e724fc66f84e8d731552d1f2306, type: 2}
-  Description: 
+  TurnDuration: 3
+  PP: 5
+  Type: {fileID: 11400000, guid: 6050b9a141ecb9b468e92d8c20fa2a53, type: 2}
+  LevelUnlocked: 0
+  Description: Adds fuel to the fire. Raises the user's Attack by 3 turns.

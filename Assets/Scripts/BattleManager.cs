@@ -68,6 +68,8 @@ public class BattleManager : MonoBehaviour
 
     public void RegisterAction(Attack attack)
     {
+        if (attack.CurrenPP == 0) return;
+
         _playerActions.Add(attack);
     }
     private void DoAttack(Attack attack)
@@ -88,6 +90,8 @@ public class BattleManager : MonoBehaviour
     {
         while (true)
         {
+            Turn++;
+
             yield return new WaitForPlayerActions(() => _playerActions.Count == 1);
 
             _dialogueManager.StartDialogues($"Waiting for {p2.Name}'s action...");
@@ -115,7 +119,6 @@ public class BattleManager : MonoBehaviour
 
             _ui.SetUpActionScene();
             _playerActions.Clear();
-            Turn++;
         }
     }
     public IEnumerator BattleStart()

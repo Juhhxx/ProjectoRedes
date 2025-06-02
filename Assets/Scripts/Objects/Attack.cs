@@ -11,6 +11,7 @@ public class Attack : ScriptableObject
     private bool IsStatModifier => AttackType != AttackType.Physical;
     [HideIf("IsStatModifier")][field: SerializeField] public int Power;
     [HideIf("IsStatModifier")][field: SerializeField] public int Accuracy;
+    [HideIf("IsStatModifier")][field: SerializeField] public int CritRate = 25;
     [HideIf("IsStatModifier")][field: SerializeField] public bool HasRecoil;
     [ShowIf("IsStatModifier")][field: SerializeField] public List<Stats> Stat;
     [ShowIf("IsStatModifier")][field: SerializeField] public float AmountPercent;
@@ -19,7 +20,8 @@ public class Attack : ScriptableObject
     [ShowIf("IsStatModifier")][field: SerializeField] public int TurnDuration;
     [field: SerializeField] public int PP;
     [field: SerializeField] public Type Type;
-    [field: SerializeField] public string Description;
+    [field: SerializeField] public int LevelUnlocked;
+    [TextArea][field: SerializeField] public string Description;
 
     private Creature _attacker;
     public Creature Attacker => _attacker;
@@ -141,7 +143,7 @@ public class Attack : ScriptableObject
     {
         int rnd = Random.Range(1, 100);
 
-        if (rnd < 25) return 2.0f;
+        if (rnd < CritRate) return 2.0f;
         else return 1.0f;
     }
 

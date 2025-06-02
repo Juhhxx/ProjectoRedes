@@ -18,9 +18,15 @@ MonoBehaviour:
   <Type>k__BackingField: {fileID: 11400000, guid: 6050b9a141ecb9b468e92d8c20fa2a53, type: 2}
   <Attacks>k__BackingField:
   - {fileID: 11400000, guid: 97020359ba7eced4e8685e3e885032b7, type: 2}
-  - {fileID: 11400000, guid: 92c7d74c9eb63a24d8836123b69d9eb9, type: 2}
-  - {fileID: 11400000, guid: b6858e33c2039984f9ca45ed40db5921, type: 2}
-  - {fileID: 11400000, guid: 6ef023063459a0c40b30e6149dbb2481, type: 2}
+  - {fileID: 11400000, guid: 23355adefb71ede48976a04f4ecc078a, type: 2}
+  - {fileID: 11400000, guid: 14f5de24e970ad8439524d183779e7d5, type: 2}
+  - {fileID: 11400000, guid: 26deef319619c9b44a04b97296e41e33, type: 2}
+  - {fileID: 11400000, guid: 435d5df09e60bfc43bc23a064e9a594c, type: 2}
+  - {fileID: 11400000, guid: 797ba20b02307214e8de7018f705d073, type: 2}
+  - {fileID: 11400000, guid: 07f63dafc5ee25e49bf9bb9184561dc4, type: 2}
+  - {fileID: 11400000, guid: 08cb691fdcd29334484013b6cc0e4440, type: 2}
+  - {fileID: 11400000, guid: 022c0a15efceecc40a0ac09537a30675, type: 2}
+  - {fileID: 11400000, guid: 83a71a7cd1615cf4f99bfd18c1d28001, type: 2}
   <BaseHP>k__BackingField: 25
   <BaseAttack>k__BackingField: 70
   <BaseDefense>k__BackingField: 55

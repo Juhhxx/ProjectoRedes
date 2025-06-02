@@ -49,8 +49,7 @@ public class Creature : ScriptableObject
             animation += "Down";
         }
 
-        _dialogue.AddDialogue(message);
-        _anim.SetTrigger(animation);
+        _dialogue.AddDialogue(message, () => _anim.SetTrigger(animation));
     }
     public void CheckModifier()
     {
@@ -126,7 +125,7 @@ public class Creature : ScriptableObject
 
         attack.Used();
 
-        _dialogue.AddDialogue(attack.GetAttackMessage());
+        _dialogue.AddDialogue(attack.GetAttackMessage(), () => attack.Attacker.Animator.SetTrigger("Attack"));
         if (attack.GetEffectiveness(Type) > 1.0f) _dialogue.AddDialogue("It's super effective!!!");
         else if (attack.GetEffectiveness(Type) < 1.0f) _dialogue.AddDialogue("It's not very effective...");
 
@@ -135,10 +134,8 @@ public class Creature : ScriptableObject
         if (attack.HasRecoil)
         {
             recoilDamage = damage / 2;
-            _dialogue.AddDialogue($"{attack.Attacker.Name} got damaged by recoil");
+            _dialogue.AddDialogue($"{attack.Attacker.Name} got damaged by recoil !");
         }
-
-        if (damage > 0) attack.Attacker.Animator.SetTrigger("Attack");
 
         return (damage, recoilDamage);
     }
