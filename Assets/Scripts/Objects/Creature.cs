@@ -30,15 +30,27 @@ public class Creature : ScriptableObject
     public void AddModifier(Attack owner, StatModifier modifier)
     {
         string message = "";
+        string animation = "";
+
         _statModifiers.Add(modifier);
         _dialogue.AddDialogue(owner.GetAttackMessage());
 
         message += $"{Name}'s {modifier.Stat}";
+        animation += $"{modifier.Stat}";
 
-        if (modifier.Amount > 0) message += "\nrose !";
-        else message += "\nfell !";
+        if (modifier.Amount > 0)
+        {
+            message += "\nrose !";
+            animation += "Up";
+        }
+        else
+        {
+            message += "\nfell !";
+            animation += "Down";
+        }
 
         _dialogue.AddDialogue(message);
+        _anim.SetTrigger(animation);
     }
     public void CheckModifier()
     {
@@ -96,7 +108,7 @@ public class Creature : ScriptableObject
     }
     public void SetHP(float hp) => _currentHP = hp;
 
-    public float TakeDamage(Attack attack)
+    public (float, float) TakeDamage(Attack attack)
     {
         Debug.Log($"{attack.Attacker.Name} used {attack.Name} on {Name}");
         int rnd = UnityEngine.Random.Range(1, 100);
@@ -105,7 +117,7 @@ public class Creature : ScriptableObject
         {
             _dialogue.AddDialogue($"{attack.Attacker.Name} missed...");
 
-            return 0f;
+            return (0f, 0f);
         }
 
         float damage = CalculateDamage(attack);
@@ -118,9 +130,17 @@ public class Creature : ScriptableObject
         if (attack.GetEffectiveness(Type) > 1.0f) _dialogue.AddDialogue("It's super effective!!!");
         else if (attack.GetEffectiveness(Type) < 1.0f) _dialogue.AddDialogue("It's not very effective...");
 
-        if (damage > 0) Animator.SetTrigger("Attack");
+        float recoilDamage = 0f;
 
-        return damage;
+        if (attack.HasRecoil)
+        {
+            recoilDamage = damage / 2;
+            _dialogue.AddDialogue($"{attack.Attacker.Name} got damaged by recoil");
+        }
+
+        if (damage > 0) attack.Attacker.Animator.SetTrigger("Attack");
+
+        return (damage, recoilDamage);
     }
     private float CalculateDamage(Attack attack)
     {

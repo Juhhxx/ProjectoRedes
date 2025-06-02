@@ -9,8 +9,9 @@ public class Attack : ScriptableObject
     [field: SerializeField] public string Name;
     [field: SerializeField] public AttackType AttackType;
     private bool IsStatModifier => AttackType != AttackType.Physical;
-    [ShowIf("IsStatModifier")][field: SerializeField] public int Power;
+    [HideIf("IsStatModifier")][field: SerializeField] public int Power;
     [HideIf("IsStatModifier")][field: SerializeField] public int Accuracy;
+    [HideIf("IsStatModifier")][field: SerializeField] public bool HasRecoil;
     [ShowIf("IsStatModifier")][field: SerializeField] public List<Stats> Stat;
     [ShowIf("IsStatModifier")][field: SerializeField] public float AmountPercent;
     [ShowIf("IsStatModifier")][field: SerializeField] public bool Randomize;
@@ -44,7 +45,7 @@ public class Attack : ScriptableObject
     public void ResetUsedTimes() => _timesUsed = 0;
     public void Used() => _timesUsed++;
 
-    public float DoAttack()
+    public (float, float) DoAttack()
     {
         switch (AttackType)
         {
@@ -60,13 +61,13 @@ public class Attack : ScriptableObject
                 break;
         }
 
-        return 0f;
+        return (0f, 0f);
     }
-    private float DoDamage()
+    private (float, float) DoDamage()
     {
         Debug.Log($"ATTACK {Name} from {Attacker.Name}");
 
-        float damage = Target.TakeDamage(this);
+        (float, float) damage = Target.TakeDamage(this);
 
         return damage;
     }

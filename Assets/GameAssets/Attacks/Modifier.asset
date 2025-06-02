@@ -16,6 +16,7 @@ MonoBehaviour:
   AttackType: 1
   Power: 40
   Accuracy: 80
+  HasRecoil: 0
   Stat: 03000000
   AmountPercent: 0.5
   Randomize: 1

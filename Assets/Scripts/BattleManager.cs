@@ -72,13 +72,15 @@ public class BattleManager : MonoBehaviour
     }
     private void DoAttack(Attack attack)
     {
-        float damage = attack.DoAttack();
+        (float damage, float recoil) = attack.DoAttack();
 
         Debug.Log(damage);
 
         if (damage > 0)
         {
             StartCoroutine(attack.Target.ApplyDamage(damage));
+
+            if (recoil > 0) StartCoroutine(attack.Attacker.ApplyDamage(recoil));
         }
     }
 
@@ -91,6 +93,7 @@ public class BattleManager : MonoBehaviour
             _dialogueManager.StartDialogues($"Waiting for {p2.Name}'s action...");
 
             yield return new WaitForPlayerActions(() => _playerActions.Count == _actionsListSize);
+            yield return new WaitForSeconds(1);
 
             OrganizeActions();
 
@@ -100,15 +103,15 @@ public class BattleManager : MonoBehaviour
 
             _dialogueManager.StartDialogues();
 
+            yield return new WaitForEndOfFrame();
             yield return _wfd;
 
             DoAttack(_playerActions[1]);
 
             _dialogueManager.StartDialogues();
 
+            yield return new WaitForEndOfFrame();
             yield return _wfd;
-
-            yield return new WaitForKeyDown("Submit");
 
             _ui.SetUpActionScene();
             _playerActions.Clear();

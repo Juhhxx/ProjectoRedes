@@ -70,7 +70,7 @@ public class DialogueManager : MonoBehaviour
             }
 
             yield return _wff;
-            if (_dialogueQueue.Count > 0) yield return _wfk;
+            yield return _wfk;
             yield return _wff;
 
             i++;

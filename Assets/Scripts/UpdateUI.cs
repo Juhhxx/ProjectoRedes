@@ -20,6 +20,7 @@ public class UpdateUI : MonoBehaviour
     [Header("Player UI References")]
     [Space(5f)]
     [SerializeField] private SpriteRenderer _playerSprite;
+    [SerializeField] private SpriteMask _playerSpriteMask;
     [SerializeField] private Image _playerTypeSprite;
     [SerializeField] private Image _playerHPBar;
     [SerializeField] private TextMeshProUGUI _playerName;
@@ -38,6 +39,7 @@ public class UpdateUI : MonoBehaviour
     [Header("Enemy UI References")]
     [Space(5f)]
     [SerializeField] private SpriteRenderer _enemySprite;
+    [SerializeField] private SpriteMask _enemySpriteMask;
     [SerializeField] private Image _enemyTypeSprite;
     [SerializeField] private Image _enemyHPBar;
     [SerializeField] private TextMeshProUGUI _enemyName;
@@ -85,6 +87,7 @@ public class UpdateUI : MonoBehaviour
     {
         // Setup Player UI
         _playerSprite.sprite = _player?.Creature?.BackSprite;
+        _playerSpriteMask.sprite = _player?.Creature?.BackSprite;
         _playerTypeSprite.sprite = _player?.Creature?.Type?.Sprite;
         _playerName.text = _player?.Creature?.Name;
         _playerHPBar.color = _fullHPColor;
@@ -99,6 +102,7 @@ public class UpdateUI : MonoBehaviour
 
         // Setup Enemy UI
         _enemySprite.sprite = _enemy?.Creature?.FrontSprite;
+        _enemySpriteMask.sprite = _enemy?.Creature?.FrontSprite;
         _enemyTypeSprite.sprite = _enemy?.Creature?.Type?.Sprite;
         _enemyName.text = _enemy?.Creature?.Name;
         _enemyHPBar.color = _fullHPColor;
