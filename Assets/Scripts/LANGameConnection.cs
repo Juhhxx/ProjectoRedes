@@ -42,9 +42,12 @@ public class LANGameConnection : NetworkBehaviour
     }
     private void Update()
     {
-        _numberOfClients = NetworkManager.Singleton.ConnectedClientsList.Count;
-        _playersText.text = $"Players Connected : {_numberOfClients}/2";
-        Debug.Log($"Players Connected : {_numberOfClients}/2");
+        if (IsServer)
+        {
+            _numberOfClients = NetworkManager.Singleton.ConnectedClientsList.Count;
+            _playersText.text = $"Players Connected : {_numberOfClients}/2";
+            Debug.Log($"Players Connected : {_numberOfClients}/2");
+        }
     }
 
     private void StartHosting()
@@ -101,7 +104,7 @@ public class LANGameConnection : NetworkBehaviour
     {
         NetworkManager.Singleton.NetworkConfig = new NetworkConfig
         {
-            NetworkTransport = NetworkManager.Singleton.AddComponent<UnityTransport>()
+            NetworkTransport = NetworkManager.Singleton.GetComponent<UnityTransport>()
         };
     }
     // Get Local IP Adress
