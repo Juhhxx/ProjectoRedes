@@ -176,7 +176,7 @@ public class NetworkSetup : MonoBehaviour
           .Where(s => s.enabled)
           .Select(s => s.path)
           .ToArray();
-        buildPlayerOptions.locationPathName = Path.Combine("Builds", "MPWyzard.exe");
+        buildPlayerOptions.locationPathName = Path.Combine("Builds", "NetpetBattlerz.exe");
         buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
         buildPlayerOptions.options = BuildOptions.None;
         // Perform the build

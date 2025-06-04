@@ -48,7 +48,11 @@ public class LANGameConnection : NetworkBehaviour
     {
         if (_serverOn)
         {
-            if (IsServer)
+            Debug.Log("SERVER IS ON");
+            Debug.Log($"IsHost : {IsHost}");
+            Debug.Log($"IsServer : {IsServer}");
+            Debug.Log($"HasAuthority : {HasAuthority}");
+            if (HasAuthority)
             {
                 _numberOfClients = NetworkManager.Singleton.ConnectedClientsList.Count;
                 _playersText.text = $"Players Connected : {_numberOfClients}/2";
