@@ -24,6 +24,7 @@ public class LANGameConnection : NetworkBehaviour
     [SerializeField] private Button _startBattleButton;
 
     private int _numberOfClients;
+    private bool _serverOn;
 
     [Space(10)]
     [Header("Client")]
@@ -39,22 +40,27 @@ public class LANGameConnection : NetworkBehaviour
         _joinButton.onClick.AddListener(() => StartClient());
 
         _joinBattleButton.onClick.AddListener(() => ConnectClient());
+
+        NetworkManager.Singleton.OnServerStarted += () => _serverOn = true;
+        NetworkManager.Singleton.OnServerStopped += (bool i) => _serverOn = false;
     }
     private void Update()
     {
-        if (IsServer)
+        if (_serverOn)
         {
-            _numberOfClients = NetworkManager.Singleton.ConnectedClientsList.Count;
-            _playersText.text = $"Players Connected : {_numberOfClients}/2";
-            Debug.Log($"Players Connected : {_numberOfClients}/2");
+            if (IsServer)
+            {
+                _numberOfClients = NetworkManager.Singleton.ConnectedClientsList.Count;
+                _playersText.text = $"Players Connected : {_numberOfClients}/2";
+                Debug.Log($"Players Connected : {_numberOfClients}/2");
+            }
         }
+        
     }
 
     private void StartHosting()
     {
         string adress = GetLocalIPv4();
-
-        SetNetworkTransport();
 
         UnityTransport transport = NetworkManager.Singleton
                                 .GetComponent<UnityTransport>();
@@ -70,8 +76,6 @@ public class LANGameConnection : NetworkBehaviour
 
     private void StartClient()
     {
-        SetNetworkTransport();
-
         NetworkManager.Singleton.OnClientDisconnectCallback += (ulong i) =>
         SetMessage("Connection Failed!\nJoin Code might be incorrect.");
 
@@ -79,7 +83,7 @@ public class LANGameConnection : NetworkBehaviour
         SetMessage("Connection Successful!\nWaiting for Host to Start Battle!");
 
         _mainMenu.SetActive(false);
-        _clientMenu.SetActive(true);        
+        _clientMenu.SetActive(true);
     }
     private void ConnectClient()
     {
@@ -98,15 +102,7 @@ public class LANGameConnection : NetworkBehaviour
 
         _messageText.text = message;
     }
-
-    // Set Network Transport as Unity Transport
-    private void SetNetworkTransport()
-    {
-        NetworkManager.Singleton.NetworkConfig = new NetworkConfig
-        {
-            NetworkTransport = NetworkManager.Singleton.GetComponent<UnityTransport>()
-        };
-    }
+    
     // Get Local IP Adress
     private string GetLocalIPv4()
     {
