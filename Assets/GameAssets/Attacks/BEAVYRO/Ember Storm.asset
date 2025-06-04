@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: EMBER STORM
   AttackType: 0
-  Power: 65
+  Power: 55
   Accuracy: 80
   CritRate: 50
   HasRecoil: 1
@@ -25,5 +25,6 @@ MonoBehaviour:
   TurnDuration: 0
   PP: 10
   Type: {fileID: 11400000, guid: 6050b9a141ecb9b468e92d8c20fa2a53, type: 2}
-  LevelUnlocked: 0
-  Description: The user uses its rage to storm the enemy. Deals some recoil damage.
+  LevelUnlocked: 4
+  Description: The user storms the enemy with its fiery rage. Has a greater crit
+    rate, but deals some recoil damage.

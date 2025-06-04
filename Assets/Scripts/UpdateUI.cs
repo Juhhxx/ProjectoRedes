@@ -61,6 +61,7 @@ public class UpdateUI : MonoBehaviour
 
     private GameObject _lastSelected;
     private BattleManager _battleManager;
+    private PlayerController _playerController;
 
     private void Update()
     {
@@ -75,8 +76,8 @@ public class UpdateUI : MonoBehaviour
 
         _battleManager = manager;
 
-        _player = _battleManager.P1;
-        _enemy = _battleManager.P2;
+        _player = _playerController.Player;
+        _enemy = _player.Creature.Opponent;
 
         Debug.Log($"PLAYER : {_player.Creature.Name}");
         Debug.Log($"ENEMY : {_enemy.Creature.Name}");
@@ -178,6 +179,7 @@ public class UpdateUI : MonoBehaviour
         _actions.SetActive(false);
         _attacks.SetActive(false);
         _battleText.sizeDelta = new Vector2(500f, _battleText.rect.height);
+        _dialogueManager.StartDialogues($"Waiting for {_enemy.Name}'s action...");
     }
     public void SetUpActionScene()
     {

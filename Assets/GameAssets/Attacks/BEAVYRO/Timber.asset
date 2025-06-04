@@ -25,5 +25,6 @@ MonoBehaviour:
   TurnDuration: 0
   PP: 20
   Type: {fileID: 11400000, guid: 3c13095b177911945b66ff1ac341ca05, type: 2}
-  LevelUnlocked: 0
-  Description: The user cruches all the wood around it.
+  LevelUnlocked: 2
+  Description: The user chews on a tree trunk and drops it on the enemy, dealing
+    some damage.

@@ -16,7 +16,7 @@ MonoBehaviour:
   AttackType: 0
   Power: 40
   Accuracy: 85
-  CritRate: 25
+  CritRate: 10
   HasRecoil: 0
   Stat: 
   AmountPercent: 0
@@ -25,5 +25,5 @@ MonoBehaviour:
   TurnDuration: 0
   PP: 20
   Type: {fileID: 11400000, guid: 0e0e0e724fc66f84e8d731552d1f2306, type: 2}
-  LevelUnlocked: 0
-  Description: The user uses its teeth to burst the water open.
+  LevelUnlocked: 2
+  Description: The user breaks a dam open and floods the enemy, dealing some damage.

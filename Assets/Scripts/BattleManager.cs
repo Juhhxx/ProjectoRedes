@@ -6,9 +6,7 @@ using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
-    [Expandable][SerializeField] private Player p1, p2;
-    public Player P1 => p1;
-    public Player P2 => p2;
+    [SerializeField] private List<Player> _players;
     [SerializeField][Range(1, 2)] private int _actionsListSize;
 
     [SerializeField] private UpdateUI _ui;
@@ -29,21 +27,19 @@ public class BattleManager : MonoBehaviour
 
     private WaitForDialogueEnd _wfd;
 
-    private void Awake()
+    private void SetPlayers()
     {
-        p1.SetUpPlayer();
-        p2.SetUpPlayer();
+        for (int i = 0; i < 2; i++)
+        {
+            int otherIdx = i == 0 ? 1 : 0;
 
-        p1.Creature.SetOpponent(p2.Creature);
-        p2.Creature.SetOpponent(p1.Creature);
+            _players[i].Creature.SetOpponent(_players[otherIdx].Creature);
 
-        OnTurnPassed += () => p1.Creature.SetTurn(Turn);
-        OnTurnPassed += () => p1.Creature.CheckModifier();
-
-        OnTurnPassed += () => p2.Creature.SetTurn(Turn);
-        OnTurnPassed += () => p2.Creature.CheckModifier();
+            OnTurnPassed += () => _players[i].Creature.SetTurn(Turn);
+            OnTurnPassed += () => _players[i].Creature.CheckModifier();
+        }
     }
-    private void Start()
+    private void SetUp()
     {
         _playerActions = new List<Attack>();
         _dialogueManager.SetUpDialogueManager();
@@ -57,15 +53,19 @@ public class BattleManager : MonoBehaviour
     }
     private void Update()
     {
-        for (int i = 0; i < 4; i++)
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1 + i))
-            {
-                RegisterAction(p2.Creature.CurrentAttackSet[i]);
-            }
-        }
+        // for (int i = 0; i < 4; i++)
+        // {
+        //     if (Input.GetKeyDown(KeyCode.Alpha1 + i))
+        //     {
+        //         RegisterAction(p2.Creature.CurrentAttackSet[i]);
+        //     }
+        // }
     }
 
+    public void AddPlayer(Player player)
+    {
+        if (_players.Count < 2) _players.Add(player);
+    }
     public void RegisterAction(Attack attack)
     {
         if (attack.CurrenPP == 0) return;
@@ -93,8 +93,6 @@ public class BattleManager : MonoBehaviour
             Turn++;
 
             yield return new WaitForPlayerActions(() => _playerActions.Count == 1);
-
-            _dialogueManager.StartDialogues($"Waiting for {p2.Name}'s action...");
 
             yield return new WaitForPlayerActions(() => _playerActions.Count == _actionsListSize);
             yield return new WaitForSeconds(1);

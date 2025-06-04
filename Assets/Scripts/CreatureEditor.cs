@@ -6,11 +6,19 @@ using TMPro;
 using System.Collections.Generic;
 
 
-public class CreatureEditor : MonoBehaviour
+public class CreatureEditor : MonoBehaviour, IPlayerDependent
 {
     [SerializeField] private EventSystem _eventSystem;
-    [SerializeField] private Player _playerBase;
+    private PlayerController _controller;
+    private Player _player => _controller?.Player;
+
+    [Space(10f)]
+    [Header("Showcase")]
+    [Space(5f)]
+    [SerializeField] private Image _creatureSprite;
+    [SerializeField] private TextMeshProUGUI _creatureName;
     
+    [Space(10f)]
     [Header("Creature Selection")]
     [Space(5f)]
     [SerializeField] private GameObject _creatureSelectionMenu;
@@ -45,12 +53,36 @@ public class CreatureEditor : MonoBehaviour
 
     private void Start()
     {
+        UpdateShowcase();
+
+        _moveButonList = new List<Button>();
+        _moveList = new List<Attack>();
+        _selectedMoves = new List<Attack>();
+
         _nextButton.onClick.AddListener(() => SetUpMovesMenu());
-        _doneButton.onClick.AddListener(() => SetUpCreaturesMenu());
+        _backButton.onClick.AddListener(() => SetUpCreaturesMenu());
+        _backButton.onClick.AddListener(() => DeleteButtons());
+        _doneButton.onClick.AddListener(() => Finish());
+        _doneButton.onClick.AddListener(() => DeleteButtons());
     }
     private void Update()
     {
         CheckButtonSelected();
+
+        Debug.Log($"Buttons : {_moveButonList.Count} MOVES : {_moveList.Count} SELECTED : {_selectedMoves}");
+    }
+
+    private void UpdateShowcase()
+    {
+        if (_player?.Creature == null)
+        {
+            _creatureName.transform.parent.gameObject.SetActive(false);
+            return;
+        }
+
+        _creatureName.transform.parent.gameObject.SetActive(true);
+        _creatureSprite.sprite = _player.Creature.FrontSprite;
+        _creatureName.text = _player.Creature.Name;
     }
 
     public void SetUpCreaturesMenu()
@@ -66,7 +98,7 @@ public class CreatureEditor : MonoBehaviour
     {
         for (int i = 0; i < 3; i++)
         {
-            _creatures[i] = _creatures[i].CreateCreature(_playerBase);
+            _creatures[i] = _creatures[i].CreateCreature(_player);
 
             Transform btt = _creatureButtons.transform.GetChild(i);
 
@@ -84,10 +116,6 @@ public class CreatureEditor : MonoBehaviour
 
     private void SetUpMovesMenu()
     {
-        _moveButonList  = new List<Button>();
-        _moveList       = new List<Attack>();
-        _selectedMoves  = new List<Attack>();
-
         _tittle.text = $"Choose a MOVE SET for {_selectedCreature.Name}";
 
         SetUpMoveButtons(_selectedCreature);
@@ -169,6 +197,21 @@ public class CreatureEditor : MonoBehaviour
         _moveButonList.Insert(newIdx, tmpB);
     }
 
+    private void Finish()
+    {
+        foreach (Attack a in _selectedMoves)
+        {
+            _selectedCreature.AddAttack(a);
+        }
+
+        _player.SetCreature(_selectedCreature);
+
+        UpdateShowcase();
+
+        _moveSelectionMenu.SetActive(false);
+        _moveSelectionMenu.transform.parent.gameObject.SetActive(false);
+    }
+
     private void DefineNavigation()
     {
         Navigation customNav;
@@ -211,12 +254,12 @@ public class CreatureEditor : MonoBehaviour
 
         customNav.selectOnRight = _backButton;
         customNav.selectOnLeft = _backButton;
-        
+
         _doneButton.navigation = customNav;
     }
     private void CheckButtonSelected()
     {
-        Debug.Log(_eventSystem.currentSelectedGameObject.name);
+        Debug.Log(_eventSystem.currentSelectedGameObject?.name);
 
         if (_creatureSelectionMenu.activeInHierarchy && _eventSystem.currentSelectedGameObject.name != "Next")
         {
@@ -226,11 +269,27 @@ public class CreatureEditor : MonoBehaviour
         else if (_moveSelectionMenu.activeInHierarchy && _eventSystem.currentSelectedGameObject.name != "Done")
         {
             int idx = _eventSystem.currentSelectedGameObject.transform.GetSiblingIndex();
-            ShowMoveInfo(_selectedCreature.Attacks[idx]);
+            ShowMoveInfo(_moveList[idx]);
         }
+    }
+    private void DeleteButtons()
+    {
+        foreach (Button b in _moveButonList)
+        {
+            Destroy(b.gameObject);
+        }
+
+        _moveButonList.Clear();
+        _moveList.Clear();
+        _selectedMoves.Clear();
     }
     public void JumpToButton(Selectable button)
     {
         _eventSystem.SetSelectedGameObject(button.gameObject);
+    }
+
+    public void SetPlayer(PlayerController controller)
+    {
+        _controller = controller;
     }
 }

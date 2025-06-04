@@ -27,4 +27,4 @@ MonoBehaviour:
   Type: {fileID: 11400000, guid: 0e0e0e724fc66f84e8d731552d1f2306, type: 2}
   LevelUnlocked: 0
   Description: The user builds a small dam around them. Raises the user's Defense
-    by 3 turns.
+    for 3 turns.

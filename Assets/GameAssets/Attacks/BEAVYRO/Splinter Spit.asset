@@ -19,12 +19,12 @@ MonoBehaviour:
   CritRate: 25
   HasRecoil: 0
   Stat: 01000000
-  AmountPercent: 0.33
+  AmountPercent: 0.2
   Randomize: 0
   RandomChance: 0
   TurnDuration: 3
   PP: 5
   Type: {fileID: 11400000, guid: 6050b9a141ecb9b468e92d8c20fa2a53, type: 2}
   LevelUnlocked: 0
-  Description: The user chews some wood and spit out splinters all around. Lowers
-    the enemy's Defense by 3 turns.
+  Description: The user chews on a log and spits splinters all around. Lowers the
+    enemy's Defense for 3 turns.

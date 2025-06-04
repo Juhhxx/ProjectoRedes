@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: SCORCH
   AttackType: 0
-  Power: 60
-  Accuracy: 80
-  CritRate: 30
+  Power: 65
+  Accuracy: 85
+  CritRate: 10
   HasRecoil: 1
   Stat: 
   AmountPercent: 0
@@ -25,5 +25,5 @@ MonoBehaviour:
   TurnDuration: 0
   PP: 10
   Type: {fileID: 11400000, guid: 6050b9a141ecb9b468e92d8c20fa2a53, type: 2}
-  LevelUnlocked: 0
+  LevelUnlocked: 4
   Description: The user spews a blast of fire at the enemy. Deals some recoil damage.

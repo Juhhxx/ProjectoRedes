@@ -22,8 +22,8 @@ MonoBehaviour:
   AmountPercent: 0.33
   Randomize: 0
   RandomChance: 0
-  TurnDuration: 3
+  TurnDuration: 2
   PP: 5
   Type: {fileID: 11400000, guid: 6050b9a141ecb9b468e92d8c20fa2a53, type: 2}
   LevelUnlocked: 0
-  Description: Adds fuel to the fire. Raises the user's Attack by 3 turns.
+  Description: The user adds fuel to the fire. Raises the user's Attack for 2 turns.

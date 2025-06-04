@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Bare Teeth
   m_EditorClassIdentifier: 
   Name: BARE TEETH
-  AttackType: 2
+  AttackType: 1
   Power: 0
-  Accuracy: 0
+  Accuracy: 100
   CritRate: 25
   HasRecoil: 0
   Stat: 00000000
@@ -26,5 +26,5 @@ MonoBehaviour:
   PP: 10
   Type: {fileID: 11400000, guid: 6050b9a141ecb9b468e92d8c20fa2a53, type: 2}
   LevelUnlocked: 0
-  Description: The user mocks the enemy by showing it's teeth. Lowers the enemy's
-    Attack by 2 turns.
+  Description: The user scares the enemy by showing it's teeth. Lowers the enemy's
+    Attack for 2 turns.

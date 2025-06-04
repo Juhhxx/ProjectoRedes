@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98f3a5cd0fa537c40aa3419591c53704, type: 3}
-  m_Name: Player 3
+  m_Name: PlayerBase
   m_EditorClassIdentifier: 
-  Name: Test
-  Level: 0
-  CreatureData: {fileID: 0}
-  _creature: {fileID: 0}
+  <Name>k__BackingField: test
+  <Level>k__BackingField: 0
+  <EXP>k__BackingField: 0
+  <CreatureData>k__BackingField: {fileID: 0}

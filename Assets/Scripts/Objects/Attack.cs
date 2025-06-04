@@ -11,7 +11,7 @@ public class Attack : ScriptableObject
     private bool IsStatModifier => AttackType != AttackType.Physical;
     [HideIf("IsStatModifier")][field: SerializeField] public int Power = 0;
     [HideIf("IsStatModifier")][field: SerializeField] public int Accuracy = 100;
-    [HideIf("IsStatModifier")][field: SerializeField] public int CritRate = 25;
+    [HideIf("IsStatModifier")][field: SerializeField] public int CritRate = 10;
     [HideIf("IsStatModifier")][field: SerializeField] public bool HasRecoil;
     [ShowIf("IsStatModifier")][field: SerializeField] public List<Stats> Stat;
     [ShowIf("IsStatModifier")][field: SerializeField] public float AmountPercent;

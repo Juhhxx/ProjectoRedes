@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e927fea733ca412498deeeaf7f423d17, type: 3}
+  m_Name: River Flow
+  m_EditorClassIdentifier: 
+  Name: RIVER FLOW
+  AttackType: 1
+  Power: 0
+  Accuracy: 100
+  CritRate: 25
+  HasRecoil: 0
+  Stat: 03000000
+  AmountPercent: 0.33
+  Randomize: 0
+  RandomChance: 0
+  TurnDuration: 2
+  PP: 10
+  Type: {fileID: 11400000, guid: 0e0e0e724fc66f84e8d731552d1f2306, type: 2}
+  LevelUnlocked: 0
+  Description: The user becomes one with the river. Raises one of the user's stats
+    for 2 turns.

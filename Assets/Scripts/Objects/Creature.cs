@@ -78,6 +78,8 @@ public class Creature : ScriptableObject
 
     private Player _owner;
     public Player Owner => _owner;
+    private Player _opponent;
+    public Player Opponent => _opponent;
     private float _currentHP;
     public float CurrentHP => _currentHP;
     private List<Attack> _currentAttackSet = new List<Attack>();
@@ -93,6 +95,8 @@ public class Creature : ScriptableObject
     public void SetOwner(Player owner) => _owner = owner;
     public void SetOpponent(Creature opponent)
     {
+        _opponent = opponent.Owner;
+        
         foreach (Attack a in _currentAttackSet)
         {
             a.SetTarget(opponent);
@@ -180,14 +184,6 @@ public class Creature : ScriptableObject
 
         newC.SetOwner(owner);
         newC.SetHP(newC.HP);
-
-        // Temporary
-        // for (int i = 0; i < 4; i++)
-        // {
-        //     Debug.Log($"{Attacks[i].Name} n{i} to {Name} ({name})");
-        //     Debug.Log(i);
-        //     newC.AddAttack(Attacks[i]);
-        // }
 
         return newC;
     }
