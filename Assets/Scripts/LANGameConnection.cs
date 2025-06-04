@@ -42,12 +42,9 @@ public class LANGameConnection : NetworkBehaviour
     }
     private void Update()
     {
-        if (IsHost)
-        {
-            _numberOfClients = NetworkManager.Singleton.ConnectedClientsList.Count;
-            _playersText.text = $"Players Connected : {_numberOfClients}/2";
-            Debug.Log($"Players Connected : {_numberOfClients}/2");
-        }
+        _numberOfClients = NetworkManager.Singleton.ConnectedClientsList.Count;
+        _playersText.text = $"Players Connected : {_numberOfClients}/2";
+        Debug.Log($"Players Connected : {_numberOfClients}/2");
     }
 
     private void StartHosting()
