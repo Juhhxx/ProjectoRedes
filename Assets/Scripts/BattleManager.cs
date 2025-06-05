@@ -2,13 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
+using Unity.Netcode;
 using UnityEngine;
 
-public class BattleManager : MonoBehaviour
+public class BattleManager : NetworkBehaviour
 {
     [SerializeField] private List<Player> _players;
     [SerializeField][Range(1, 2)] private int _actionsListSize;
 
+    [SerializeField] private GameObject _mainMenuUI;
     [SerializeField] private UpdateUI _ui;
     [SerializeField] private DialogueManager _dialogueManager;
     private List<Attack> _playerActions;
@@ -27,6 +29,23 @@ public class BattleManager : MonoBehaviour
 
     private WaitForDialogueEnd _wfd;
 
+    public void SetUp()
+    {
+        SetPlayers();
+
+        _playerActions = new List<Attack>();
+        _dialogueManager.SetUpDialogueManager();
+        _ui.SetUpUI(this);
+
+        OnTurnPassed += () => Debug.Log($"TURN {Turn}");
+
+        _wfd = new WaitForDialogueEnd(_dialogueManager);
+
+        _mainMenuUI.SetActive(false);
+        gameObject.SetActive(true);
+
+        StartCoroutine(Test());
+    }
     private void SetPlayers()
     {
         for (int i = 0; i < 2; i++)
@@ -38,18 +57,6 @@ public class BattleManager : MonoBehaviour
             OnTurnPassed += () => _players[i].Creature.SetTurn(Turn);
             OnTurnPassed += () => _players[i].Creature.CheckModifier();
         }
-    }
-    private void SetUp()
-    {
-        _playerActions = new List<Attack>();
-        _dialogueManager.SetUpDialogueManager();
-        _ui.SetUpUI(this);
-
-        OnTurnPassed += () => Debug.Log($"TURN {Turn}");
-
-        _wfd = new WaitForDialogueEnd(_dialogueManager);
-
-        StartCoroutine(Test());
     }
     private void Update()
     {
@@ -91,8 +98,6 @@ public class BattleManager : MonoBehaviour
         while (true)
         {
             Turn++;
-
-            yield return new WaitForPlayerActions(() => _playerActions.Count == 1);
 
             yield return new WaitForPlayerActions(() => _playerActions.Count == _actionsListSize);
             yield return new WaitForSeconds(1);

@@ -107,12 +107,17 @@ public class Creature : ScriptableObject
         Attack newAttack = attack.CreateAttack();
 
         _currentAttackSet.Add(newAttack);
+
+        MoveAttackToStart(Attacks.IndexOf(attack),0);
         
         newAttack.SetAttacker(this);
     }
-    public void RemoveAttack(Attack attack)
+    private void MoveAttackToStart(int oldIdx, int newIdx)
     {
-        _currentAttackSet.Remove(attack);
+        Attack tmp = Attacks[oldIdx];
+
+        Attacks.RemoveAt(oldIdx);
+        Attacks.Insert(newIdx, tmp);
     }
     public void SetHP(float hp) => _currentHP = hp;
 

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1585330409024512572}
   - component: {fileID: 5865232039359669092}
+  - component: {fileID: 4275266218106518553}
   m_Layer: 0
   m_Name: PlayerController
   m_TagString: Untagged
@@ -47,3 +48,17 @@ MonoBehaviour:
   _playerBase: {fileID: 11400000, guid: b78990f5a4b4d5c468ec1ef5a2eb639a, type: 2}
   _loginScript: {fileID: 0}
   _creatureMenus: {fileID: 0}
+  _accountManager: {fileID: 4275266218106518553}
+  _profileText: {fileID: 0}
+--- !u!114 &4275266218106518553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5884350503942393452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a4df0a7bdb979c4984c2c0ab2d8e007, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

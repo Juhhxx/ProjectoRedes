@@ -1,15 +1,18 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-// using PlayFab;
-// using PlayFab.ClientModels;
 
 public class LoginMenu : MonoBehaviour, IPlayerDependent
 {
+    [SerializeField] private GameObject _loginMenu;
+    [SerializeField] private GameObject _mainMenu;
     [SerializeField] private Sprite _buttonhShow;
     [SerializeField] private Sprite _buttonhHide;
     [SerializeField] private Image _showHideButton;
+    [SerializeField] private TextMeshProUGUI _titleText;
+    [SerializeField] private Button _confirmButton;
     [SerializeField] private TMP_InputField _inputFieldUsername;
     [SerializeField] private TMP_InputField _inputFieldPassword;
     [SerializeField] private TextMeshProUGUI _errorText;
@@ -23,6 +26,25 @@ public class LoginMenu : MonoBehaviour, IPlayerDependent
     private void Start()
     {
         _wfs = new WaitForSeconds(_errorFadeTime);
+    }
+
+    public void StartCreateAccount()
+    {
+        _mainMenu.SetActive(false);
+        gameObject.SetActive(true);
+        _titleText.text = "Create Account";
+        _confirmButton.GetComponentInChildren<TextMeshProUGUI>().text = "Create";
+        _confirmButton.onClick.AddListener(() => SubmitInfo(true));
+        EventSystemUtilities.JumpToButton(_inputFieldUsername.gameObject);
+    }
+    public void StartLogin()
+    {
+        _mainMenu.SetActive(false);
+        gameObject.SetActive(true);
+        _titleText.text = "Login";
+        _confirmButton.GetComponentInChildren<TextMeshProUGUI>().text = "Confirm";
+        _confirmButton.onClick.AddListener(() => SubmitInfo(false));
+        EventSystemUtilities.JumpToButton(_inputFieldUsername.gameObject);
     }
 
     public void ShowHidePassword()
@@ -40,9 +62,12 @@ public class LoginMenu : MonoBehaviour, IPlayerDependent
 
         _inputFieldPassword.ForceLabelUpdate();
     }
-    public void Sumbit(bool createAccount)
+    private void SubmitInfo(bool createAccount)
     {
         string errorMsg = "";
+
+        string username = _inputFieldUsername.text;
+        string password = _inputFieldPassword.text;
 
         if (_inputFieldUsername.text == "") errorMsg += "Username";
         if (_inputFieldPassword.text == "")
@@ -56,32 +81,53 @@ public class LoginMenu : MonoBehaviour, IPlayerDependent
         {
             errorMsg += " missing!";
 
-            if (_showError != null) StopCoroutine(_showError);
-            _showError = StartCoroutine(ShowErrorMessage(errorMsg));
+            ErrorMessage(errorMsg);
 
             return;
+        }
+        else if (password.Length < 6)
+        {
+            errorMsg = "Password too Short !\n(Has to be 6 or more character long)";
+
+            ErrorMessage(errorMsg);
+
+            return;
+        }
+        else if (username.Length < 3)
+        {
+            errorMsg = "Username too Short !\n(Has to be 3 or more character long)";
+
+            ErrorMessage(errorMsg);
+
+            return;
+        }
+
+        if (createAccount)
+        {
+            AccountManager.Instance.CreateAccount(
+                username,
+                password,
+                () => _loginMenu.SetActive(false),
+                (e) => ErrorMessage(errorMsg)
+            );
+        }
+        else
+        {
+            AccountManager.Instance.LogIntoAccount(
+                username,
+                password,
+                () => _loginMenu.SetActive(false),
+                (e) => ErrorMessage(errorMsg)
+            );
         }
 
         Debug.Log($"SUCCESSFUL SUBMITION");
     }
 
-    public void CreateAccount(string username, string password)
+    private void ErrorMessage(string message)
     {
-        // PlayFab.PlayFabClientAPI.RegisterPlayFabUser(
-        //     new RegisterPlayfabUserRequest()
-        //     {
-        //         Username = username,
-        //         Password = password,
-        //     },
-        //     response =>
-        //     {
-        //         Debug.Log($"Successfull Account Creation : {username}, {password}");
-        //     },
-        //     error =>
-        //     {
-        //         Debug.Log($"Unsuccessfull Account Creation : {username}, {password}\n{error.ErrorMessage}");
-        //     }
-        // );
+        if (_showError != null) StopCoroutine(_showError);
+        _showError = StartCoroutine(ShowErrorMessage(message));
     }
     private IEnumerator ShowErrorMessage(string message)
     {

@@ -1,5 +1,6 @@
 using UnityEngine;
 using NaughtyAttributes;
+using System.IO;
 
 [CreateAssetMenu(fileName = "Player", menuName = "Scriptable Objects/Player")]
 public class Player : ScriptableObject
@@ -13,12 +14,46 @@ public class Player : ScriptableObject
     public Creature Creature => _creature;
     public void SetName(string name) => Name = name;
     public void SetCreature(Creature creature) => _creature = creature;
+    public void SetLevelEXP(int level, int exp)
+    {
+        Level = level;
+        EXP = exp;
+    }
+    public void LoadCreature(string name, params string[] moves)
+    {
+        if (name == null) return;
+        
+        Creature creature = GetReference<Creature>("Creatures", name).CreateCreature(this);
+
+        Debug.Log(creature.Name);
+
+        SetCreature(creature);
+
+        string attacksPath = Path.Combine("Attacks", name);
+
+        Debug.Log(attacksPath);
+
+        foreach (string move in moves)
+        {
+            Attack attack = GetReference<Attack>(attacksPath, move);
+
+            creature.AddAttack(attack);
+        }
+    }
+    private T GetReference<T>(string type, string name) where T : ScriptableObject
+    {
+        string path = Path.Combine("GameAssets",type,name);
+
+        Debug.Log(path);
+
+        return Resources.Load<T>(path);
+    }
 
     public Player CreatePlayer(string name)
     {
         Player newPlr = Instantiate(this);
 
-        _creature = CreatureData.CreateCreature(this);
+        newPlr.SetName(name);
 
         return newPlr;
     }

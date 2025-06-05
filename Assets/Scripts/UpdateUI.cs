@@ -13,7 +13,6 @@ public class UpdateUI : MonoBehaviour
     [Space(10f)]
     [Header("UI References")]
     [Space(5f)]
-    [SerializeField] private EventSystem _eventSystem;
     [SerializeField] private DialogueManager _dialogueManager;
 
     [Space(10f)]
@@ -60,6 +59,7 @@ public class UpdateUI : MonoBehaviour
     // [SerializeField] private Animator _battleMenuAnimator;
 
     private GameObject _lastSelected;
+    private GameObject _lastSelectedAttack;
     private BattleManager _battleManager;
     private PlayerController _playerController;
 
@@ -150,12 +150,13 @@ public class UpdateUI : MonoBehaviour
     {
         if (_attacks.activeInHierarchy)
         {
-            int idx = _eventSystem.currentSelectedGameObject.transform.GetSiblingIndex();
+            _lastSelectedAttack = EventSystemUtilities.GetCurrentSelection();
+            int idx = _lastSelectedAttack.transform.GetSiblingIndex();
             ShowAttackInfo(_player.Creature.CurrentAttackSet[idx]);
         }
         else if (_actions.activeInHierarchy)
         {
-            _lastSelected = _eventSystem.currentSelectedGameObject;
+            _lastSelected = EventSystemUtilities.GetCurrentSelection();
         }
     }
     private void CheckCloseMenu()
@@ -164,12 +165,12 @@ public class UpdateUI : MonoBehaviour
         {
             if (Input.GetButtonDown("Quit"))
             {
-                _eventSystem.sendNavigationEvents = true;
+                EventSystemUtilities.ToggleNavigation(true);
 
                 if (_attacks.activeInHierarchy) _attacks.SetActive(false);
                 else _stats.SetActive(false);
 
-                _eventSystem.SetSelectedGameObject(_lastSelected);
+                EventSystemUtilities.JumpToButton(_lastSelected);
             }
         }
     }
@@ -186,9 +187,19 @@ public class UpdateUI : MonoBehaviour
         Debug.Log(_lastSelected.name);
         _actions.SetActive(true);
         UpdateBattleUI();
-        _eventSystem.SetSelectedGameObject(_lastSelected);
+        EventSystemUtilities.JumpToButton(_lastSelected);
         _battleText.sizeDelta = new Vector2(360f, _battleText.rect.height);
         _dialogueManager.StartDialogues($"What will {_player?.Creature?.Name} do?");
+    }
+    public void OpenAttackMenu()
+    {
+        _attacks.SetActive(true);
+        EventSystemUtilities.JumpToButton(_lastSelectedAttack);
+    }
+    public void OpenStatsMenu()
+    {
+        _stats.SetActive(true);
+        EventSystemUtilities.ToggleNavigation(false);
     }
     public void UpdateHPBars()
     {
@@ -204,8 +215,5 @@ public class UpdateUI : MonoBehaviour
         if (_enemyHPBar.fillAmount <= 0.25f) _enemyHPBar.color = _lowHPColor;
         else if (_enemyHPBar.fillAmount <= 0.5f) _enemyHPBar.color = _halfHPColor;
     }
-    public void JumpToButton(Selectable button)
-    {
-        _eventSystem.SetSelectedGameObject(button.gameObject);
-    }
+    
 }

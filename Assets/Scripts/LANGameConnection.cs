@@ -4,16 +4,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Net;
 using System.Linq;
-using Unity.VisualScripting;
 using Unity.Netcode.Transports.UTP;
 
 public class LANGameConnection : NetworkBehaviour
 {
     [Header("General")]
     [Space(5)]
+    [SerializeField] private GameObject _hostObject;
     [SerializeField] private GameObject _mainMenu;
     [SerializeField] private Button _hostButton;
     [SerializeField] private Button _joinButton;
+    [SerializeField] private PlayerController _player;
+    [SerializeField] private BattleManager _battle;
 
     [Space(10)]
     [Header("Host")]
@@ -41,8 +43,12 @@ public class LANGameConnection : NetworkBehaviour
 
         _joinBattleButton.onClick.AddListener(() => ConnectClient());
 
+        _startBattleButton.onClick.AddListener(() => StartBattleClientRpc());
+
         NetworkManager.Singleton.OnServerStarted += () => _serverOn = true;
         NetworkManager.Singleton.OnServerStopped += (bool i) => _serverOn = false;
+
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
     }
     private void Update()
     {
@@ -51,7 +57,7 @@ public class LANGameConnection : NetworkBehaviour
             Debug.Log("SERVER IS ON");
             Debug.Log($"IsHost : {IsHost}");
             Debug.Log($"IsServer : {IsServer}");
-            Debug.Log($"HasAuthority : {HasAuthority}");
+            Debug.Log($"IsServer : {HasAuthority}");
             if (HasAuthority)
             {
                 _numberOfClients = NetworkManager.Singleton.ConnectedClientsList.Count;
@@ -97,16 +103,33 @@ public class LANGameConnection : NetworkBehaviour
 
         transport.SetConnectionData(adress, 7777);
 
-        NetworkManager.Singleton.StartClient();
-    }
+        bool result = NetworkManager.Singleton.StartClient();
 
+        if (result) SetMessage("Connection Successful!\nWaiting for Host to Start Battle...");
+        else        SetMessage("Connection Failed!\nJoin Code might be incorrect.");
+    }
     private void SetMessage(string message)
     {
         if (!_messageText.gameObject.activeInHierarchy) _messageText.gameObject.SetActive(true);
 
         _messageText.text = message;
     }
-    
+
+    private void OnClientConnected(ulong clientId)
+    {
+        _battle.AddPlayer(_player.Player);
+    }
+
+    [ClientRpc]
+    private void StartBattleClientRpc()
+    {
+        if (_numberOfClients != 2) return;
+
+        _hostObject.SetActive(false);
+
+        _battle.SetUp();
+    }
+
     // Get Local IP Adress
     private string GetLocalIPv4()
     {

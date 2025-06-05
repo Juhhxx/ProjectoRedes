@@ -231,25 +231,25 @@ public class NetworkSetup : MonoBehaviour
     [MenuItem("Tools/Launch (Server) _F11", priority = 40)]
     public static void Launch1()
     {
-        Run("Builds\\MPWyzard.exe", "--server");
+        Run("Builds\\NetpetBattlerz.exe", "--server");
     }
     [MenuItem("Tools/Launch (Server + Client)", priority = 50)]
     public static void Launch2()
     {
-        Run("Builds\\MPWyzard.exe", "--server");
-        Run("Builds\\MPWyzard.exe", "");
+        Run("Builds\\NetpetBattlerz.exe", "--server");
+        Run("Builds\\NetpetBattlerz.exe", "");
     }
     [MenuItem("Tools/Launch (Client + Client)", priority = 60)]
     public static void Launch3()
     {
-        Run("Builds\\MPWyzard.exe", "");
-        Run("Builds\\MPWyzard.exe", "");
+        Run("Builds\\NetpetBattlerz.exe", "");
+        Run("Builds\\NetpetBattlerz.exe", "");
     }
     [MenuItem("Tools/Close All", priority = 100)]
     public static void CloseAll()
     {
         // Get all processes with the specified name
-        Process[] processes = Process.GetProcessesByName("MPWyzard");
+        Process[] processes = Process.GetProcessesByName("NetpetBattlerz");
         foreach (var process in processes)
         {
             try
