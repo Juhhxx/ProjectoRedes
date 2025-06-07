@@ -37,8 +37,6 @@ public class NetworkSetup : MonoBehaviour
         }
         if (isServer)
             StartCoroutine(StartAsServerCR());
-        else
-            StartCoroutine(StartAsClientCR());
     }
 
     IEnumerator StartAsServerCR()

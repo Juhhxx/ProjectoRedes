@@ -107,7 +107,12 @@ public class LoginMenu : MonoBehaviour, IPlayerDependent
             AccountManager.Instance.CreateAccount(
                 username,
                 password,
-                () => _loginMenu.SetActive(false),
+                () =>
+                {
+                    gameObject.SetActive(false);
+                    _mainMenu.SetActive(true);
+                    _loginMenu.SetActive(false);
+                },
                 (e) => ErrorMessage(errorMsg)
             );
         }
@@ -116,7 +121,12 @@ public class LoginMenu : MonoBehaviour, IPlayerDependent
             AccountManager.Instance.LogIntoAccount(
                 username,
                 password,
-                () => _loginMenu.SetActive(false),
+                () =>
+                {
+                    gameObject.SetActive(false);
+                    _mainMenu.SetActive(true);
+                    _loginMenu.SetActive(false);
+                },
                 (e) => ErrorMessage(errorMsg)
             );
         }

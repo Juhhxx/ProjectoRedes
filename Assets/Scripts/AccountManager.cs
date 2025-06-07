@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
+using UnityEngine.Events;
 
 public class AccountManager : MonoBehaviour, IPlayerDependent
 {
@@ -13,10 +14,22 @@ public class AccountManager : MonoBehaviour, IPlayerDependent
     public static AccountManager Instance;
     private static Dictionary<string, UserDataRecord> _userData;
     private static bool _isGettingData;
+    private bool _isLoggedIn;
+    public bool IsLoggedIn
+    {
+        get
+        {
+            if (!_isLoggedIn) OnNotLoggedInInteraction?.Invoke();
+            
+            return _isLoggedIn;
+        }
+    }
+    public UnityEvent OnNotLoggedInInteraction;
 
     private void Awake()
     {
         Instance = this;
+        _isLoggedIn = false;
     }
 
     public void CreateAccount(string username, string password, Action success = null, Action<string> fail = null)
@@ -37,7 +50,6 @@ public class AccountManager : MonoBehaviour, IPlayerDependent
                     new Dictionary<string, string>()
                     {
                         { "Name" , username },
-                        { "Level" , _player.Level.ToString() },
                         { "EXP" , _player.EXP.ToString() },
                     }
                 );
@@ -63,6 +75,7 @@ public class AccountManager : MonoBehaviour, IPlayerDependent
             {
                 Debug.Log($"Successful Account Login for {username}");
                 LoadPlayerData();
+                _isLoggedIn = true;
                 success();
             },
             error =>
@@ -150,8 +163,7 @@ public class AccountManager : MonoBehaviour, IPlayerDependent
 
                 _controller.SetUpPlayer(player);
 
-                _controller.Player.SetLevelEXP(
-                    int.Parse(data["Level"].Value),
+                _controller.Player.SetEXP(
                     int.Parse(data["EXP"].Value)
                 );
 
@@ -165,6 +177,8 @@ public class AccountManager : MonoBehaviour, IPlayerDependent
                         data["Move4"].Value
                     );
                 }
+
+                _controller.UpdatePlayer();
             },
             fail =>
             {

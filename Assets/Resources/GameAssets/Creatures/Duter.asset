@@ -17,7 +17,7 @@ MonoBehaviour:
   <Name>k__BackingField: DUTER
   <Type>k__BackingField: {fileID: 11400000, guid: 0e0e0e724fc66f84e8d731552d1f2306, type: 2}
   <Attacks>k__BackingField:
-  - {fileID: 11400000, guid: 97020359ba7eced4e8685e3e885032b7, type: 2}
+  - {fileID: 11400000, guid: a290dc98ca5e130419fb79e3794e7aa4, type: 2}
   - {fileID: 11400000, guid: 2d00bf59b547bd4459cb56c1b2e429dc, type: 2}
   - {fileID: 11400000, guid: 5907b2b3c679c7f479b14d7b9ce0e4a2, type: 2}
   - {fileID: 11400000, guid: 09ecfd156bc7c034eab424960f733fdb, type: 2}

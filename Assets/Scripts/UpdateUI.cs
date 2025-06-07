@@ -69,12 +69,12 @@ public class UpdateUI : MonoBehaviour
         CheckCloseMenu();
     }
 
-    public void SetUpUI(BattleManager manager)
+    public void SetUpUI()
     {
         Debug.Log("UI CONFIGURED");
         Cursor.lockState = CursorLockMode.Locked;
 
-        _battleManager = manager;
+        _battleManager = GetComponent<BattleManager>();
 
         _player = _playerController.Player;
         _enemy = _player.Creature.Opponent;
@@ -136,7 +136,8 @@ public class UpdateUI : MonoBehaviour
             Debug.LogWarning($"{attack.Name} was Regsitred for {attack.Attacker.Name}");
 
             atkButton.onClick.AddListener(() => SetUpBattleScene());
-            atkButton.onClick.AddListener(() => _battleManager?.RegisterAction(attack));
+            atkButton.onClick.AddListener(() => _battleManager?.RegisterActionServerRpc
+                                                            (_player.Creature.Name, i));
 
             atkButton.GetComponentInChildren<TextMeshProUGUI>().text = $"> {attack.Name}";
         }

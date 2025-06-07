@@ -10,6 +10,7 @@ public class CreatureEditor : MonoBehaviour, IPlayerDependent
 {
     private PlayerController _controller;
     private Player _player => _controller?.Player;
+    [SerializeField] private GameObject _selectionMenu;
 
     [Space(10f)]
     [Header("Showcase")]
@@ -67,8 +68,6 @@ public class CreatureEditor : MonoBehaviour, IPlayerDependent
     private void Update()
     {
         CheckButtonSelected();
-
-        Debug.Log($"Buttons : {_moveButonList.Count} MOVES : {_moveList.Count} SELECTED : {_selectedMoves}");
     }
 
     public void UpdateShowcase()
@@ -86,6 +85,10 @@ public class CreatureEditor : MonoBehaviour, IPlayerDependent
 
     private void SetUpCreaturesMenu()
     {
+        if (!AccountManager.Instance.IsLoggedIn) return;
+
+        _selectionMenu.SetActive(true);
+
         EventSystemUtilities.JumpToButton(_creatureButtons.transform
                                     .GetChild(GetFirstSelection()).gameObject);
 
@@ -240,15 +243,15 @@ public class CreatureEditor : MonoBehaviour, IPlayerDependent
                 new Dictionary<string, string>()
                 {
                     { "Creature" , _player.Creature?.Name },
-                    { "Move1" , _player.Creature?.CurrentAttackSet[0].Name },
-                    { "Move2" , _player.Creature?.CurrentAttackSet[1].Name },
-                    { "Move3" , _player.Creature?.CurrentAttackSet[2].Name },
-                    { "Move4" , _player.Creature?.CurrentAttackSet[3].Name }
+                    { "Move1" , _player.Creature?.CurrentAttackSet[0].name.Replace("(Clone)", "") },
+                    { "Move2" , _player.Creature?.CurrentAttackSet[1].name.Replace("(Clone)", "") },
+                    { "Move3" , _player.Creature?.CurrentAttackSet[2].name.Replace("(Clone)", "") },
+                    { "Move4" , _player.Creature?.CurrentAttackSet[3].name.Replace("(Clone)", "") }
                 }
             );
 
         _moveSelectionMenu.SetActive(false);
-        _moveSelectionMenu.transform.parent.gameObject.SetActive(false);
+        _selectionMenu.SetActive(false);
     }
 
     private void DefineNavigation()

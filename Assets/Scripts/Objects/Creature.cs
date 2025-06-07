@@ -104,16 +104,19 @@ public class Creature : ScriptableObject
     }
     public void AddAttack(Attack attack)
     {
+        Debug.Log($"Adding Atack {attack.Name}");
+        
         Attack newAttack = attack.CreateAttack();
 
-        _currentAttackSet.Add(newAttack);
-
         MoveAttackToStart(Attacks.IndexOf(attack),0);
+
+        _currentAttackSet.Add(newAttack);
         
         newAttack.SetAttacker(this);
     }
     private void MoveAttackToStart(int oldIdx, int newIdx)
     {
+        Debug.Log($"Moving from {oldIdx} to {newIdx}, Size : {Attacks.Count}");
         Attack tmp = Attacks[oldIdx];
 
         Attacks.RemoveAt(oldIdx);

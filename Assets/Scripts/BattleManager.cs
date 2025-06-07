@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using NaughtyAttributes;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -31,21 +30,32 @@ public class BattleManager : NetworkBehaviour
 
     public void SetUp()
     {
+        Debug.LogWarning("AAAAAAAAA");
+
         SetPlayers();
 
         _playerActions = new List<Attack>();
-        _dialogueManager.SetUpDialogueManager();
-        _ui.SetUpUI(this);
 
         OnTurnPassed += () => Debug.Log($"TURN {Turn}");
 
         _wfd = new WaitForDialogueEnd(_dialogueManager);
 
-        _mainMenuUI.SetActive(false);
-        gameObject.SetActive(true);
+        SetUpPlayersUIClientRpc();
 
         StartCoroutine(Test());
     }
+
+    [ClientRpc]
+    private void SetUpPlayersUIClientRpc()
+    {
+
+        _dialogueManager.SetUpDialogueManager();
+        _ui.SetUpUI();
+
+        _mainMenuUI.SetActive(false);
+        gameObject.SetActive(true);
+    }
+
     private void SetPlayers()
     {
         for (int i = 0; i < 2; i++)
@@ -58,27 +68,33 @@ public class BattleManager : NetworkBehaviour
             OnTurnPassed += () => _players[i].Creature.CheckModifier();
         }
     }
-    private void Update()
-    {
-        // for (int i = 0; i < 4; i++)
-        // {
-        //     if (Input.GetKeyDown(KeyCode.Alpha1 + i))
-        //     {
-        //         RegisterAction(p2.Creature.CurrentAttackSet[i]);
-        //     }
-        // }
-    }
-
+    
     public void AddPlayer(Player player)
     {
         if (_players.Count < 2) _players.Add(player);
     }
-    public void RegisterAction(Attack attack)
+
+    [ServerRpc]
+    public void RegisterActionServerRpc(string creature, int attackId)
     {
+        Attack attack = GetAction(creature, attackId);
+
         if (attack.CurrenPP == 0) return;
 
         _playerActions.Add(attack);
     }
+    private Attack GetAction(string creature, int attack)
+    {
+        foreach (Player p in _players)
+        {
+            if (p.Creature.Name == creature)
+            {
+                return p.Creature.CurrentAttackSet[attack];
+            }
+        }
+        return null;
+    }
+
     private void DoAttack(Attack attack)
     {
         (float damage, float recoil) = attack.DoAttack();

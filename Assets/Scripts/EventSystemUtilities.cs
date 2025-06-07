@@ -19,5 +19,8 @@ public class EventSystemUtilities : MonoBehaviour
 
     public static void ToggleNavigation(bool onoff)
     => _eventSystem.sendNavigationEvents = onoff;
+
+    public static void QuitApplication()
+    => Application.Quit();
 }
 ;

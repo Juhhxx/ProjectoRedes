@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e927fea733ca412498deeeaf7f423d17, type: 3}
-  m_Name: Breaker Wave
+  m_Name: Pine Bonk
   m_EditorClassIdentifier: 
-  Name: BREAKERWAVE
+  Name: PINE BONK
   AttackType: 0
   Power: 55
   Accuracy: 80
@@ -24,7 +24,7 @@ MonoBehaviour:
   RandomChance: 0
   TurnDuration: 0
   PP: 10
-  Type: {fileID: 11400000, guid: 0e0e0e724fc66f84e8d731552d1f2306, type: 2}
+  Type: {fileID: 11400000, guid: 3c13095b177911945b66ff1ac341ca05, type: 2}
   LevelUnlocked: 0
-  Description: The user gains the force of a wave and strikes the enemy with force.
-    Has a greater crit rate, but deals some recoil damage.
+  Description: The user's enemy is struck by a falling pinecone. Has a greater crit
+    rate.

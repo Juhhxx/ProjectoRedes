@@ -23,6 +23,10 @@ public class PlayerController : MonoBehaviour
         _player = player;
         Debug.Log($"Set Up {Player.Name}");
         _profileText.text = $"{Player.Name} Lv. {Player.Level}";
+    }
+
+    public void UpdatePlayer()
+    {
         _creatureMenus.UpdateShowcase();
     }
 

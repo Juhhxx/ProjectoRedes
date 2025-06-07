@@ -17,10 +17,16 @@ MonoBehaviour:
   <Name>k__BackingField: GRASSILLY
   <Type>k__BackingField: {fileID: 11400000, guid: 3c13095b177911945b66ff1ac341ca05, type: 2}
   <Attacks>k__BackingField:
-  - {fileID: 11400000, guid: 97020359ba7eced4e8685e3e885032b7, type: 2}
-  - {fileID: 11400000, guid: 97020359ba7eced4e8685e3e885032b7, type: 2}
-  - {fileID: 11400000, guid: 97020359ba7eced4e8685e3e885032b7, type: 2}
-  - {fileID: 11400000, guid: 97020359ba7eced4e8685e3e885032b7, type: 2}
+  - {fileID: 11400000, guid: 6cf41b5831350a641b107674584304d0, type: 2}
+  - {fileID: 11400000, guid: b8fe8a0f5a4c53749898e3c577b0599d, type: 2}
+  - {fileID: 11400000, guid: f20830e325ee2ea4884cd3bf49aec120, type: 2}
+  - {fileID: 11400000, guid: e10ba8b5c6d5fbb45931a2dd7f17c786, type: 2}
+  - {fileID: 11400000, guid: 28294edf4f3f2fc44a834558114bd842, type: 2}
+  - {fileID: 11400000, guid: 06e40c04c1e0f1a439d1fb62276977c5, type: 2}
+  - {fileID: 11400000, guid: 4a1ed55282e7e78478d25b00565d2faa, type: 2}
+  - {fileID: 11400000, guid: 3ca5fdc8be2a10c4f8501d1a09a340da, type: 2}
+  - {fileID: 11400000, guid: 2c6c72b8969226b4ab0578755b056cdb, type: 2}
+  - {fileID: 11400000, guid: 3b83be551e3d5e34687392e76f701956, type: 2}
   <BaseHP>k__BackingField: 25
   <BaseAttack>k__BackingField: 60
   <BaseDefense>k__BackingField: 65

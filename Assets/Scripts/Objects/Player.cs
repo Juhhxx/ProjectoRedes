@@ -6,7 +6,7 @@ using System.IO;
 public class Player : ScriptableObject
 {
     [field: SerializeField] public string Name { get; private set; }
-    [field: SerializeField] public int Level { get; private set; }
+    public int Level => GetLevel(EXP);
     [field: SerializeField] public int EXP { get; private set; }
     [field: SerializeField] public Creature CreatureData { get; private set; }
 
@@ -14,9 +14,8 @@ public class Player : ScriptableObject
     public Creature Creature => _creature;
     public void SetName(string name) => Name = name;
     public void SetCreature(Creature creature) => _creature = creature;
-    public void SetLevelEXP(int level, int exp)
+    public void SetEXP(int exp)
     {
-        Level = level;
         EXP = exp;
     }
     public void LoadCreature(string name, params string[] moves)
@@ -49,6 +48,10 @@ public class Player : ScriptableObject
         return Resources.Load<T>(path);
     }
 
+    private int GetLevel(int exp)
+    {
+        return (int)Mathf.Floor(Mathf.Log((float)exp / 10 + 1, 2f));
+    }
     public Player CreatePlayer(string name)
     {
         Player newPlr = Instantiate(this);

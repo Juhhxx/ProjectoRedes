@@ -10,21 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e927fea733ca412498deeeaf7f423d17, type: 3}
-  m_Name: Whirpool
+  m_Name: Yippie
   m_EditorClassIdentifier: 
-  Name: WHIRLPOOL
-  AttackType: 2
+  Name: YIPPIE
+  AttackType: 1
   Power: 0
   Accuracy: 100
   CritRate: 10
   HasRecoil: 0
-  Stat: 01000000
+  Stat: 00000000
   AmountPercent: 0.33
   Randomize: 0
   RandomChance: 0
   TurnDuration: 2
   PP: 10
-  Type: {fileID: 11400000, guid: 0e0e0e724fc66f84e8d731552d1f2306, type: 2}
+  Type: {fileID: 11400000, guid: a77fb0af16d0d8d4ba68db36877c461f, type: 2}
   LevelUnlocked: 0
-  Description: The user launches a whirpool at the enemy, making it dizzy. Lowers
-    the enemy's Defense.
+  Description: The jumps around to boost itself up. Raises Attack for 2 turns.
