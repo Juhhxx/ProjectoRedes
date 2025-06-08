@@ -1,18 +1,22 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
 public class BattleManager : NetworkBehaviour
 {
     [SerializeField] private List<Player> _players;
+    [SerializeField] private Player _playerBase;
+    private List<PlayerData> _playerDataAdd = new List<PlayerData>();
+    private List<PlayerData> _playerDatas = new List<PlayerData>();
     [SerializeField][Range(1, 2)] private int _actionsListSize;
 
-    [SerializeField] private GameObject _mainMenuUI;
     [SerializeField] private UpdateUI _ui;
     [SerializeField] private DialogueManager _dialogueManager;
-    private List<Attack> _playerActions;
+    private List<string> _playerActions;
+    
     public event Action OnTurnPassed;
     private int _turn;
     public int Turn
@@ -21,65 +25,114 @@ public class BattleManager : NetworkBehaviour
 
         private set
         {
-            OnTurnPassed?.Invoke();
             _turn = value;
+            OnTurnPassed?.Invoke();
         }
     }
 
     private WaitForDialogueEnd _wfd;
 
-    public void SetUp()
+
+    public override void OnNetworkSpawn()
     {
-        Debug.LogWarning("AAAAAAAAA");
+        base.OnNetworkSpawn();
 
-        SetPlayers();
 
-        _playerActions = new List<Attack>();
+        if (_playerDataAdd.Count > 0)
+        {
+            foreach (PlayerData p in _playerDataAdd) AddPlayerDatasClientRpc(p);
+
+            SetPlayersClientRpc();
+        }
+        else
+        {
+            Debug.LogWarning("PLAYERS DATA NOT SYNCHORINZED");
+        }
+    }
+
+    private void SetUp()
+    {
+        if (!IsServer) return;
+
+        Debug.LogWarning("BBBBBBBB");
+
+        _playerActions = new List<string>();
 
         OnTurnPassed += () => Debug.Log($"TURN {Turn}");
 
         _wfd = new WaitForDialogueEnd(_dialogueManager);
 
-        SetUpPlayersUIClientRpc();
+        Debug.LogWarning($"PLAYER 1 ID : {_players[0].ID}");
+        Debug.LogWarning($"PLAYER 2 ID : {_players[1].ID}");
 
-        StartCoroutine(Test());
+        InitializeUIClientRpc();
+
+        Debug.LogWarning("BBBBBBBB");
+        StartCoroutine(BattleStart());
     }
 
     [ClientRpc]
-    private void SetUpPlayersUIClientRpc()
+    private void InitializeUIClientRpc()
     {
-
-        _dialogueManager.SetUpDialogueManager();
-        _ui.SetUpUI();
-
-        _mainMenuUI.SetActive(false);
-        gameObject.SetActive(true);
+        foreach (Player p in _players)
+        {
+            if (p.ID == NetworkManager.Singleton.LocalClientId)
+            {
+                _dialogueManager.SetUpDialogueManager();
+                _ui.SetUpUI(p);
+                break;
+            }
+        }
     }
 
-    private void SetPlayers()
+    public void AddPlayers(List<PlayerData> players)
     {
+        if (players.Count == 2)
+                foreach (PlayerData p in players) _playerDataAdd.Add(p);
+        
+    }
+    [ClientRpc]
+    private void AddPlayerDatasClientRpc(PlayerData p)
+    {
+        _playerDatas.Add(p);
+    }
+
+    [ClientRpc]
+    private void SetPlayersClientRpc()
+    {
+        _players.Clear();
+
+        for (int i = 0; i < 2; i++)
+        {
+            int icapture = i;
+
+            Player newP = _playerBase.CreatePlayer(_playerDatas[i].Name);
+
+            newP.SetEXP(_playerDatas[i].EXP);
+            newP.SetId(_playerDatas[i].ID);
+            newP.LoadCreature(_playerDatas[i].Creature, _playerDatas[i].Move1,
+                                                        _playerDatas[i].Move2,
+                                                        _playerDatas[i].Move3,
+                                                        _playerDatas[i].Move4);
+
+            _players.Add(newP);
+            Debug.Log($"Add player {newP.Name} in {NetworkManager.Singleton.LocalClientId}, idP {newP.ID}");
+
+            OnTurnPassed += () => _players[icapture].Creature.SetTurn(Turn);
+            OnTurnPassed += () => _players[icapture].Creature.CheckModifier();
+        }
         for (int i = 0; i < 2; i++)
         {
             int otherIdx = i == 0 ? 1 : 0;
-
             _players[i].Creature.SetOpponent(_players[otherIdx].Creature);
-
-            OnTurnPassed += () => _players[i].Creature.SetTurn(Turn);
-            OnTurnPassed += () => _players[i].Creature.CheckModifier();
         }
-    }
-    
-    public void AddPlayer(Player player)
-    {
-        if (_players.Count < 2) _players.Add(player);
+
+        SetUp();
     }
 
-    [ServerRpc]
-    public void RegisterActionServerRpc(string creature, int attackId)
+    public void RegisterAction(string creature, int attackId, int speed)
     {
-        Attack attack = GetAction(creature, attackId);
-
-        if (attack.CurrenPP == 0) return;
+        string attack = creature + "|" + attackId + "|" + speed;
 
         _playerActions.Add(attack);
     }
@@ -89,14 +142,21 @@ public class BattleManager : NetworkBehaviour
         {
             if (p.Creature.Name == creature)
             {
+                Debug.Log($"{creature}, long {p.Creature.CurrentAttackSet.Count}, id{attack}");
                 return p.Creature.CurrentAttackSet[attack];
             }
         }
         return null;
     }
 
-    private void DoAttack(Attack attack)
+    private void DoAttack(string attackString)
     {
+        string[] attackInfo = attackString.Split("|");
+
+        Debug.Log($"{attackInfo[0]} DOING ATTACK {attackInfo[1]}");
+
+        Attack attack = GetAction(attackInfo[0], int.Parse(attackInfo[1]));
+
         (float damage, float recoil) = attack.DoAttack();
 
         Debug.Log(damage);
@@ -108,10 +168,23 @@ public class BattleManager : NetworkBehaviour
             if (recoil > 0) StartCoroutine(attack.Attacker.ApplyDamage(recoil));
         }
     }
-
-    private IEnumerator Test()
+    private bool CheckWin()
     {
-        while (true)
+        foreach (Player p in _players)
+        {
+            if (p.Creature.CurrentHP == 0)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public IEnumerator BattleStart()
+    {
+        Debug.Log("START BATTLE COROUTINE");
+
+        while (!CheckWin())
         {
             Turn++;
 
@@ -139,24 +212,20 @@ public class BattleManager : NetworkBehaviour
             _ui.SetUpActionScene();
             _playerActions.Clear();
         }
-    }
-    public IEnumerator BattleStart()
-    {
-        yield return new WaitForPlayerActions(() => _playerActions.Count == _actionsListSize);
 
-        OrganizeActions();
-
-        _dialogueManager.StartDialogues();
+        foreach (Player p in _players)
+            if (p.Creature.CurrentHP > 0)
+                p.SetEXP(p.EXP + 10);
     }
     private void OrganizeActions()
     {
-        if (_playerActions[0].Attacker.Speed < _playerActions[1].Attacker.Speed)
-        {
-            Attack tmp = _playerActions[0];
+        if (int.Parse(_playerActions[0].Split("|")[2]) < int.Parse(_playerActions[1].Split("|")[2]))
+            {
+                string tmp = _playerActions[0];
 
-            _playerActions[0] = _playerActions[1];
-            _playerActions[1] = tmp;
-        }
+                _playerActions[0] = _playerActions[1];
+                _playerActions[1] = tmp;
+            }
     }
 
 }

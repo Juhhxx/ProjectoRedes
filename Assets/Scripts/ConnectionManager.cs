@@ -10,10 +10,9 @@ public class ConnectionManager : NetworkBehaviour
     [Header("General")]
     [Space(5)]
     [SerializeField] private GameObject _mainMenu;
-    [SerializeField] private Player _playerBase;
     [SerializeField] private GameObject _battleScreen;
     private BattleManager _serverBattle;
-    private List<Player> _players;
+    private List<PlayerData> _players;
 
     private int _numberOfClients;
     private bool _serverOn;
@@ -26,12 +25,13 @@ public class ConnectionManager : NetworkBehaviour
     }
     private void Start()
     {
-        _players = new List<Player>();
+        _players = new List<PlayerData>();
 
         NetworkManager.Singleton.OnServerStarted += () => _serverOn = true;
         NetworkManager.Singleton.OnServerStopped += (bool i) => _serverOn = false;
 
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
     }
     private void Update()
     {
@@ -78,21 +78,30 @@ public class ConnectionManager : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        _serverBattle ??= _battleScreen.GetComponent<BattleManager>();
-
         Debug.Log($"Player {clientId} connected!");
     }
-
-    public void StartBattle()
+    private void OnClientDisconnected(ulong clientId)
     {
-        if (_numberOfClients != 2) return;
+        ToogleMainMenuClientRpc(true);
+    }
+
+    public bool StartBattle()
+    {
+        if (_numberOfClients != 2) return false;
 
         GetPlayerData();
 
-        foreach (Player p in _players)
-            _serverBattle.AddPlayer(p);
+        GameObject battle = Instantiate(_battleScreen);
+        NetworkObject netBattle = battle.GetComponent<NetworkObject>();
 
-        _serverBattle.SetUp();
+        _serverBattle = battle.GetComponent<BattleManager>();
+
+        _serverBattle.AddPlayers(_players);
+
+        netBattle.Spawn();
+
+        ToogleMainMenuClientRpc(false);
+        return true;
     }
 
     private void GetPlayerData()
@@ -103,13 +112,14 @@ public class ConnectionManager : NetworkBehaviour
 
             PlayerData pd = playerObject.GetComponent<PlayerNetwork>().Player;
 
-            Player newP = _playerBase.CreatePlayer(pd.Name);
-
-            newP.SetEXP(pd.EXP);
-            newP.LoadCreature(pd.Creature, pd.Move1, pd.Move2, pd.Move3, pd.Move4);
-
-            _players.Add(newP);
+            _players.Add(pd);
         }
+    }
+
+    [ClientRpc]
+    private void ToogleMainMenuClientRpc(bool onoff)
+    {
+        _mainMenu.SetActive(onoff);
     }
 
     // Get Local IP Adress

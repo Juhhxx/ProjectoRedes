@@ -61,7 +61,6 @@ public class UpdateUI : MonoBehaviour
     private GameObject _lastSelected;
     private GameObject _lastSelectedAttack;
     private BattleManager _battleManager;
-    private PlayerController _playerController;
 
     private void Update()
     {
@@ -69,14 +68,13 @@ public class UpdateUI : MonoBehaviour
         CheckCloseMenu();
     }
 
-    public void SetUpUI()
+    public void SetUpUI(Player player)
     {
         Debug.Log("UI CONFIGURED");
-        Cursor.lockState = CursorLockMode.Locked;
 
         _battleManager = GetComponent<BattleManager>();
 
-        _player = _playerController.Player;
+        _player = player;
         _enemy = _player.Creature.Opponent;
 
         Debug.Log($"PLAYER : {_player.Creature.Name}");
@@ -135,9 +133,11 @@ public class UpdateUI : MonoBehaviour
 
             Debug.LogWarning($"{attack.Name} was Regsitred for {attack.Attacker.Name}");
 
+            int icapture = i;
+
             atkButton.onClick.AddListener(() => SetUpBattleScene());
-            atkButton.onClick.AddListener(() => _battleManager?.RegisterActionServerRpc
-                                                            (_player.Creature.Name, i));
+            atkButton.onClick.AddListener(() => _battleManager?.RegisterAction
+                                                            (_player.Creature.Name, icapture, _player.Creature.Speed));
 
             atkButton.GetComponentInChildren<TextMeshProUGUI>().text = $"> {attack.Name}";
         }
@@ -152,7 +152,12 @@ public class UpdateUI : MonoBehaviour
         if (_attacks.activeInHierarchy)
         {
             _lastSelectedAttack = EventSystemUtilities.GetCurrentSelection();
-            int idx = _lastSelectedAttack.transform.GetSiblingIndex();
+
+            int idx = 0;
+
+            if (_lastSelectedAttack.transform.parent.parent == _attacks)
+                idx = _lastSelectedAttack.transform.GetSiblingIndex();
+
             ShowAttackInfo(_player.Creature.CurrentAttackSet[idx]);
         }
         else if (_actions.activeInHierarchy)
@@ -195,6 +200,12 @@ public class UpdateUI : MonoBehaviour
     public void OpenAttackMenu()
     {
         _attacks.SetActive(true);
+
+        if (_lastSelectedAttack == null)
+        {
+            _lastSelectedAttack = _attacks.transform.GetChild(0).GetChild(0).GetChild(0).gameObject;
+        }
+
         EventSystemUtilities.JumpToButton(_lastSelectedAttack);
     }
     public void OpenStatsMenu()

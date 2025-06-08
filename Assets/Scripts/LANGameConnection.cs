@@ -84,9 +84,16 @@ public class LANGameConnection : NetworkBehaviour
     }
     private void StartBattle()
     {
-        ConnectionManager.Instance.StartBattle();
+        bool result = ConnectionManager.Instance.StartBattle();
 
+        if (result) TurnOffUIClientRpc();
+    }
+    [ClientRpc]
+    private void TurnOffUIClientRpc()
+    {
         _hostMenu.SetActive(false);
+        _clientMenu.SetActive(false);
+        _mainMenu.SetActive(true);
         _hostObject.SetActive(false);
     }
 }

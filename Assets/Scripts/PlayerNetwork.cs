@@ -1,11 +1,10 @@
-using NaughtyAttributes;
 using Unity.Netcode;
 using UnityEngine;
 using System.Linq;
+using Unity.Collections;
 
 public class PlayerNetwork : NetworkBehaviour
 {
-    [SerializeField][ReadOnly] private string _playerName;
     private NetworkVariable<PlayerData> _player = new NetworkVariable<PlayerData>(default,
                         NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public PlayerData Player => _player.Value;
@@ -15,11 +14,11 @@ public class PlayerNetwork : NetworkBehaviour
     {
         if (!IsOwner) return;
         _ctrl = FindAnyObjectByType<PlayerController>();
-        Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         SetPlayer();
+        Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
     }
 
-    private void SetPlayer()
+    public void SetPlayer()
     {
         if (!IsOwner) return;
 
@@ -31,12 +30,16 @@ public class PlayerNetwork : NetworkBehaviour
                                                     .Replace("(Clone)", ""))
                                                     .ToArray();
 
-        _player.Value = new PlayerData(p.Name, p.EXP, p.Creature.Name, moves);
+        FixedString32Bytes[] movesF = new FixedString32Bytes[4];
+
+        for (int i = 0; i < moves.Length; i++) movesF[i] = moves[i];
+
+        ulong id = NetworkManager.Singleton.LocalClientId;
+
+        _player.Value = new PlayerData(p.Name, p.EXP, id, p.Creature.Name, movesF);
 
         Debug.Log(p.Name);
         Debug.Log(p.EXP);
         Debug.Log(moves[0]);
-
-        _playerName = p.Name;
     }
 }

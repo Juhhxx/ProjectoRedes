@@ -9,6 +9,8 @@ public class Player : ScriptableObject
     public int Level => GetLevel(EXP);
     [field: SerializeField] public int EXP { get; private set; }
     [field: SerializeField] public Creature CreatureData { get; private set; }
+    public ulong ID { get; private set; }
+    public void SetId(ulong id) => ID = id;
 
     private Creature _creature;
     public Creature Creature => _creature;

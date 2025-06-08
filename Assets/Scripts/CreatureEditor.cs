@@ -301,16 +301,22 @@ public class CreatureEditor : MonoBehaviour, IPlayerDependent
     }
     private void CheckButtonSelected()
     {
-        Debug.Log(EventSystemUtilities.GetCurrentSelection()?.name);
-
         if (_creatureSelectionMenu.activeInHierarchy && EventSystemUtilities.GetCurrentSelection()?.name != "Next")
         {
-            int idx = EventSystemUtilities.GetCurrentSelection().transform.GetSiblingIndex();
+            var selected = EventSystemUtilities.GetCurrentSelection();
+            int idx = 0;
+
+            if (selected != null) idx = selected.transform.GetSiblingIndex();
+
             ShowCreatureInfo(_creatures[idx]);
         }
         else if (_moveSelectionMenu.activeInHierarchy && EventSystemUtilities.GetCurrentSelection()?.name != "Done")
         {
-            int idx = EventSystemUtilities.GetCurrentSelection().transform.GetSiblingIndex();
+            var selected = EventSystemUtilities.GetCurrentSelection();
+            int idx = 0;
+
+            if (selected != null) idx = selected.transform.GetSiblingIndex();
+
             ShowMoveInfo(_moveList[idx]);
         }
     }
