@@ -130,8 +130,11 @@ public class BattleManager : NetworkBehaviour
         SetUp();
     }
 
-    public void RegisterAction(string creature, int attackId, int speed)
+    [ServerRpc(RequireOwnership = false)]
+    public void RegisterActionServerRpc(string creature, int attackId, int speed)
     {
+        Debug.Log($"ACTION REGISTRED FOR {creature}");
+
         string attack = creature + "|" + attackId + "|" + speed;
 
         _playerActions.Add(attack);
@@ -149,7 +152,8 @@ public class BattleManager : NetworkBehaviour
         return null;
     }
 
-    private void DoAttack(string attackString)
+    [ClientRpc]
+    private void DoAttackClientRpc(string attackString)
     {
         string[] attackInfo = attackString.Split("|");
 
@@ -168,6 +172,19 @@ public class BattleManager : NetworkBehaviour
             if (recoil > 0) StartCoroutine(attack.Attacker.ApplyDamage(recoil));
         }
     }
+
+    [ClientRpc]
+    private void UpdateDialogueClientRpc()
+    {
+        _dialogueManager.StartDialogues();
+    }
+
+    [ClientRpc]
+    private void UpdateUIClientRpc()
+    {
+        _ui.SetUpActionScene();
+    }
+
     private bool CheckWin()
     {
         foreach (Player p in _players)
@@ -195,21 +212,21 @@ public class BattleManager : NetworkBehaviour
 
             yield return new WaitForEndOfFrame();
 
-            DoAttack(_playerActions[0]);
+            DoAttackClientRpc(_playerActions[0]);
 
-            _dialogueManager.StartDialogues();
-
-            yield return new WaitForEndOfFrame();
-            yield return _wfd;
-
-            DoAttack(_playerActions[1]);
-
-            _dialogueManager.StartDialogues();
+            UpdateDialogueClientRpc();
 
             yield return new WaitForEndOfFrame();
             yield return _wfd;
 
-            _ui.SetUpActionScene();
+            DoAttackClientRpc(_playerActions[1]);
+
+            UpdateDialogueClientRpc();
+
+            yield return new WaitForEndOfFrame();
+            yield return _wfd;
+
+            UpdateUIClientRpc();
             _playerActions.Clear();
         }
 

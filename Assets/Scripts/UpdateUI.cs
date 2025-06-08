@@ -136,7 +136,7 @@ public class UpdateUI : MonoBehaviour
             int icapture = i;
 
             atkButton.onClick.AddListener(() => SetUpBattleScene());
-            atkButton.onClick.AddListener(() => _battleManager?.RegisterAction
+            atkButton.onClick.AddListener(() => _battleManager?.RegisterActionServerRpc
                                                             (_player.Creature.Name, icapture, _player.Creature.Speed));
 
             atkButton.GetComponentInChildren<TextMeshProUGUI>().text = $"> {attack.Name}";
