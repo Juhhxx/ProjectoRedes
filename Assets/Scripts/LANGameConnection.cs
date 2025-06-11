@@ -71,7 +71,7 @@ public class LANGameConnection : NetworkBehaviour
     {
         string adress = _joinCodeInput.text;
 
-        bool result = ConnectionManager.Instance.StartClientLAN(adress);
+        bool result = ConnectionManager.Instance.StartClient(adress);
 
         if (result) SetMessage("Connection Successful!\nWaiting for Host to Start Battle...");
         else SetMessage("Connection Failed!\nJoin Code might be incorrect.");

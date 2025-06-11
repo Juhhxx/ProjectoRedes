@@ -166,7 +166,11 @@ public class NetworkSetup : MonoBehaviour
 
 #if UNITY_EDITOR
     [MenuItem("Tools/Build Windows (x64)", priority = 0)]
-    public static bool BuildGame()
+    public static void BuildWindowsBuild()
+    {
+        BuildGame(BuildTarget.StandaloneWindows64);
+    }
+    public static bool BuildGame(BuildTarget targetPlatform)
     {
         // Specify build options
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
@@ -174,8 +178,8 @@ public class NetworkSetup : MonoBehaviour
           .Where(s => s.enabled)
           .Select(s => s.path)
           .ToArray();
-        buildPlayerOptions.locationPathName = Path.Combine("Builds", "NetpetBattlerz.exe");
-        buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
+        buildPlayerOptions.locationPathName = Path.Combine("Builds", targetPlatform.ToString(), "NetpetBattlerz.exe");
+        buildPlayerOptions.target = targetPlatform;
         buildPlayerOptions.options = BuildOptions.None;
         // Perform the build
         var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
@@ -203,7 +207,7 @@ public class NetworkSetup : MonoBehaviour
     public static void BuildAndLaunch1()
     {
         CloseAll();
-        if (BuildGame())
+        if (BuildGame(BuildTarget.StandaloneWindows64))
         {
             Launch1();
         }
@@ -212,7 +216,7 @@ public class NetworkSetup : MonoBehaviour
     public static void BuildAndLaunch2()
     {
         CloseAll();
-        if (BuildGame())
+        if (BuildGame(BuildTarget.StandaloneWindows64))
         {
             Launch2();
         }
@@ -221,7 +225,7 @@ public class NetworkSetup : MonoBehaviour
     public static void BuildAndLaunch3()
     {
         CloseAll();
-        if (BuildGame())
+        if (BuildGame(BuildTarget.StandaloneWindows64))
         {
             Launch3();
         }
