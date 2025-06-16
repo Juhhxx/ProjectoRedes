@@ -150,7 +150,7 @@ public class ConnectionManager : NetworkBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogWarning($"Something went wrong while setting up Allocation and Backfill : {e.Message}");
+            Debug.LogWarning($"Something went wrong while setting up Allocation : {e.Message}");
         }
         
     }
@@ -290,7 +290,7 @@ public class ConnectionManager : NetworkBehaviour
 
                     transport.SetConnectionData(ipv4Adress, port);
 
-                    StartClient(ipv4Adress, port);
+                    // StartClientRelay(ipv4Adress, port);
                     break;
 
                 case MultiplayAssignment.StatusOptions.InProgress:
@@ -336,7 +336,7 @@ public class ConnectionManager : NetworkBehaviour
     }
 
     // Client code
-    public bool StartClient(string adress, ushort port = 7777)
+    public bool StartClientLAN(string adress, ushort port = 7777)
     {
         UnityTransport transport = NetworkManager.Singleton
                                 .GetComponent<UnityTransport>();
@@ -346,6 +346,10 @@ public class ConnectionManager : NetworkBehaviour
         bool result = NetworkManager.Singleton.StartClient();
 
         return result;
+    }
+    private void StartClientRelay()
+    {
+
     }
     private void OnClientConnected(ulong clientId)
     {

@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ public class BattleManager : NetworkBehaviour
     [SerializeField] private UpdateUI _ui;
     [SerializeField] private DialogueManager _dialogueManager;
     private List<string> _playerActions;
+    private int _playerDoneReading;
     
     public event Action OnTurnPassed;
     private int _turn;
@@ -184,6 +186,9 @@ public class BattleManager : NetworkBehaviour
     {
         _ui.SetUpActionScene();
     }
+    [ServerRpc(RequireOwnership = false)]
+    private void RegisterDoneReadingServerRpc() => _playerDoneReading++;
+    
 
     private bool CheckWin()
     {
@@ -226,13 +231,23 @@ public class BattleManager : NetworkBehaviour
             yield return new WaitForEndOfFrame();
             yield return _wfd;
 
+            // RegisterDoneReadingServerRpc();
+
+            // yield return new WaitUntil(() => _playerDoneReading == 2);
+
             UpdateUIClientRpc();
+            _playerDoneReading = 0;
             _playerActions.Clear();
         }
 
         foreach (Player p in _players)
+        {
             if (p.Creature.CurrentHP > 0)
+            {
                 p.SetEXP(p.EXP + 10);
+                _dialogueManager.AddDialogue($"{p.Name} WON !!!");
+            }
+        }
     }
     private void OrganizeActions()
     {

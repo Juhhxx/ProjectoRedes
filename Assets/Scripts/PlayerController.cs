@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     {
         _player = player;
         Debug.Log($"Set Up {Player.Name}");
-        _profileText.text = $"{Player.Name} Lv. {Player.Level}";
+        _profileText.text = $"{Player.Name} Lv. {Player.Level} ({Player.EXP:0000})";
     }
 
     public void UpdatePlayer()
