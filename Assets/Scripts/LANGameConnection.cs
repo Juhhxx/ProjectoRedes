@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+using WebSocketSharp;
 
 public class LANGameConnection : NetworkBehaviour
 {
@@ -32,10 +34,10 @@ public class LANGameConnection : NetworkBehaviour
 
     private void Start()
     {
-        _hostButton.onClick.AddListener(() => StartHosting());
+        _hostButton.onClick.AddListener(async () => await StartHosting());
         _joinButton.onClick.AddListener(() => StartClient());
 
-        _joinBattleButton.onClick.AddListener(() => ConnectClient());
+        _joinBattleButton.onClick.AddListener(async () => await ConnectClient());
 
         _startBattleButton.onClick.AddListener(() => StartBattle());
     }
@@ -54,24 +56,37 @@ public class LANGameConnection : NetworkBehaviour
 
         _hostObject.SetActive(true);
     }
-    private void StartHosting()
+    private async Task StartHosting()
     {
-        string adress = ConnectionManager.Instance.StartHosting();
+        string joinCode = await ConnectionManager.Instance.StartPrivateHosting();
 
-        _joinCodeText.text = adress;
-        _mainMenu.SetActive(false);
-        _hostMenu.SetActive(true);
+        if (joinCode != null)
+        {
+            _joinCodeText.text = joinCode;
+            _mainMenu.SetActive(false);
+            _hostMenu.SetActive(true);
+        }
+        else
+        {
+            Debug.Log("Error Hosting Game");
+        }
     }
     private void StartClient()
     {
         _mainMenu.SetActive(false);
         _clientMenu.SetActive(true);
     }
-    private void ConnectClient()
+    private async Task ConnectClient()
     {
-        string adress = _joinCodeInput.text;
+        string joinCode = _joinCodeInput.text;
 
-        bool result = ConnectionManager.Instance.StartClientLAN(adress);
+        if (joinCode.IsNullOrEmpty())
+        {
+            SetMessage("No Join Code given.");
+            return;
+        }
+
+        bool result = await ConnectionManager.Instance.StartPrivateClient(joinCode);
 
         if (result) SetMessage("Connection Successful!\nWaiting for Host to Start Battle...");
         else SetMessage("Connection Failed!\nJoin Code might be incorrect.");

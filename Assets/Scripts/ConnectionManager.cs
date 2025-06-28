@@ -11,6 +11,10 @@ using Unity.Services.Authentication;
 using Unity.Services.Matchmaker;
 using Unity.Services.Matchmaker.Models;
 using Unity.Services.Multiplayer;
+using System.Threading.Tasks;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
+using Unity.Networking.Transport.Relay;
 public class ConnectionManager : NetworkBehaviour
 {
     [Header("General")]
@@ -55,6 +59,9 @@ public class ConnectionManager : NetworkBehaviour
                 Debug.Log($"Players Connected : {_numberOfClients}/2");
             }
 
+            // If we are in a matched connection, there is no UI for starting a
+            // so we need to start it automatically once we have 2 players conected
+            
             if (IsHost && _matchConnection)
             {
                 if (_numberOfClients == 2) StartBattle();
@@ -63,22 +70,29 @@ public class ConnectionManager : NetworkBehaviour
         }
     }
 
-    // Relay Connection
+    private async Task InitializeUnityServices()
+    {
+        try
+        {
+            await UnityServices.InitializeAsync();
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
+            Debug.Log($"Successful Login for Player {AuthenticationService.Instance.PlayerId}");
+        }
+        catch (Exception e)
+        {
+            Debug.Log($"Account Sign In Error : {e}");
+        }
+    }
+
+    // Relay Connection with Matchmaking
     public async void FindMatch()
     {
         if (!AccountManager.Instance.IsLoggedIn) return;
 
         Debug.Log("Looking for Match");
 
-        try
-        {
-            await UnityServices.InitializeAsync();
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
-        }
-        catch (Exception e)
-        {
-            Debug.Log($"Account Sign In Error : {e}");
-        }
+        await InitializeUnityServices();
 
         _matchConnection = true;
 
@@ -86,6 +100,7 @@ public class ConnectionManager : NetworkBehaviour
         {
             Debug.Log($"[Network] [Matchmaker Manager] Find Match!");
 
+            // Create matchmaker options to specify the correct Queue to use and the player parameters
             var matchmakerOptions = new MatchmakerOptions
             {
                 QueueName = "PlayerEXP",
@@ -94,13 +109,17 @@ public class ConnectionManager : NetworkBehaviour
             }
             };
 
+            // Create session options to specify number of players and Relay usage
             var sessionOptions = new SessionOptions() { MaxPlayers = 2 }.WithRelayNetwork();
 
-            var cancelationSource = new CancellationTokenSource();
+            // Create a cancellation source for 
+            var cancellationSource = new CancellationTokenSource();
 
-            _matchedSession = await MultiplayerService.Instance.MatchmakeSessionAsync(matchmakerOptions, sessionOptions, cancelationSource.Token);
+            // Ask the Multiplayer Services to Matchmake a Session based on the previous parameters
+            _matchedSession = await MultiplayerService.Instance.MatchmakeSessionAsync(matchmakerOptions, sessionOptions, cancellationSource.Token);
 
-            StoredMatchmakingResults matchmakingResults =  await MatchmakerService.Instance.GetMatchmakingResultsAsync(_matchedSession.Id);
+            // Store the results of the Matchmaked Session
+            StoredMatchmakingResults matchmakingResults = await MatchmakerService.Instance.GetMatchmakingResultsAsync(_matchedSession.Id);
 
             Debug.Log($"[Network] [Matchmaker Manager] Matchmaking results: {matchmakingResults}");
 
@@ -111,41 +130,47 @@ public class ConnectionManager : NetworkBehaviour
         }
     }
 
-    // LAN Connection
-    public string StartHosting()
+    // Private Connection
+    public async Task<string> StartPrivateHosting()
     {
-        string adress = GetLocalIPv4();
+        await InitializeUnityServices();
 
-        UnityTransport transport = NetworkManager.Singleton
-                                .GetComponent<UnityTransport>();
+        // Get Relay Allocation
+        Allocation allocation = await RelayService.Instance.CreateAllocationAsync(2);
 
-        transport.SetConnectionData(adress, 7777);
+        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
 
-        NetworkManager.Singleton.StartHost();
+        // Create RelayServerData
+        RelayServerData relayData = AllocationUtils.ToRelayServerData(allocation, "dtls");
 
-        return adress;
-    }
+        // Set UnityTransport Server Data
+        transport.SetRelayServerData(relayData);
 
-    // Get Local IP Adress
-    private string GetLocalIPv4()
-    {
-        return Dns.GetHostEntry(Dns.GetHostName())
-        .AddressList.First(
-        f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-        .ToString();
+        // Get the Join Code
+        string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+
+        // If the Server started, return join code, if not, return null
+        return NetworkManager.Singleton.StartHost() ? joinCode: null;
     }
 
     // Client code
-    public bool StartClientLAN(string adress, ushort port = 7777)
+    public async Task<bool> StartPrivateClient(string joinCode)
     {
-        UnityTransport transport = NetworkManager.Singleton
-                                .GetComponent<UnityTransport>();
+        await InitializeUnityServices();
 
-        transport.SetConnectionData(adress, port);
+        // Get join allocation from Relay
+        JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
-        bool result = NetworkManager.Singleton.StartClient();
+        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
 
-        return result;
+        // Create RelayServerData
+        RelayServerData relayData = AllocationUtils.ToRelayServerData(joinAllocation, "dtls");
+
+        // Set UnityTransport Server Data
+        transport.SetRelayServerData(relayData);
+
+        // Return the result of the StartClient method
+        return NetworkManager.Singleton.StartClient();
     }
     
     private void OnClientConnected(ulong clientId)
@@ -155,6 +180,7 @@ public class ConnectionManager : NetworkBehaviour
     private void OnClientDisconnected(ulong clientId)
     {
         ToogleMainMenuClientRpc(true);
+        if (IsServer) Destroy(_serverBattle.gameObject);
     }
 
     // Start Battle
