@@ -92,6 +92,8 @@ public class ConnectionManager : NetworkBehaviour
 
         Debug.Log("Looking for Match");
 
+        LoadingScreenActivator.Instance.ToogleScreen(true);
+
         await InitializeUnityServices();
 
         _matchConnection = true;
@@ -128,11 +130,17 @@ public class ConnectionManager : NetworkBehaviour
         {
             Debug.Log($"[Network] [Matchmaker Manager] Matchmaking failed : {e}!");
         }
+        finally
+        {
+            LoadingScreenActivator.Instance.ToogleScreen(false);
+        }
     }
 
     // Private Connection
     public async Task<string> StartPrivateHosting()
     {
+        LoadingScreenActivator.Instance.ToogleScreen(true);
+
         await InitializeUnityServices();
 
         // Get Relay Allocation
@@ -149,8 +157,10 @@ public class ConnectionManager : NetworkBehaviour
         // Get the Join Code
         string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
+        LoadingScreenActivator.Instance.ToogleScreen(false);
+
         // If the Server started, return join code, if not, return null
-        return NetworkManager.Singleton.StartHost() ? joinCode: null;
+        return NetworkManager.Singleton.StartHost() ? joinCode : null;
     }
 
     // Client code

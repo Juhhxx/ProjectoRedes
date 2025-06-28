@@ -11,7 +11,7 @@ public class AccountManager : MonoBehaviour, IPlayerDependent
 {
     private static PlayerController _controller;
     private static Player _player => _controller?.Player;
-    public static AccountManager Instance;
+    public static AccountManager Instance { get; private set; }
     private static Dictionary<string, UserDataRecord> _userData;
     private static bool _isGettingData;
     private bool _isLoggedIn;
@@ -46,7 +46,7 @@ public class AccountManager : MonoBehaviour, IPlayerDependent
             {
                 Debug.Log($"Successfull Account Creation : {username}, {password}");
 
-                AccountManager.Instance.SavePlayerData(
+                SavePlayerData(
                     new Dictionary<string, string>()
                     {
                         { "Name" , username },
@@ -74,9 +74,8 @@ public class AccountManager : MonoBehaviour, IPlayerDependent
             response =>
             {
                 Debug.Log($"Successful Account Login for {username}");
-                LoadPlayerData();
                 _isLoggedIn = true;
-                success();
+                LoadPlayerData(success, fail);
             },
             error =>
             {
@@ -150,7 +149,7 @@ public class AccountManager : MonoBehaviour, IPlayerDependent
             onFail => Debug.Log("Error Updating Player Data")
         );
     }
-    public void LoadPlayerData()
+    public void LoadPlayerData(Action success, Action<string> fail)
     {
         GetData(
             result =>
@@ -179,10 +178,12 @@ public class AccountManager : MonoBehaviour, IPlayerDependent
                 }
 
                 _controller.UpdatePlayer();
+                success();
             },
-            fail =>
+            error =>
             {
                 Debug.Log("Failed Loading Data");
+                fail(error.ErrorMessage);
             }
         );
     }

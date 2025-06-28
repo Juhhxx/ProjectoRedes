@@ -102,6 +102,8 @@ public class LoginMenu : MonoBehaviour, IPlayerDependent
             return;
         }
 
+        LoadingScreenActivator.Instance.ToogleScreen(true);
+        
         if (createAccount)
         {
             AccountManager.Instance.CreateAccount(
@@ -112,8 +114,13 @@ public class LoginMenu : MonoBehaviour, IPlayerDependent
                     gameObject.SetActive(false);
                     _mainMenu.SetActive(true);
                     _loginMenu.SetActive(false);
+                    LoadingScreenActivator.Instance.ToogleScreen(false);
                 },
-                (e) => ErrorMessage(errorMsg)
+                (e) =>
+                {
+                    ErrorMessage(errorMsg);
+                    LoadingScreenActivator.Instance.ToogleScreen(false);
+                }
             );
         }
         else
@@ -126,8 +133,13 @@ public class LoginMenu : MonoBehaviour, IPlayerDependent
                     gameObject.SetActive(false);
                     _mainMenu.SetActive(true);
                     _loginMenu.SetActive(false);
+                    LoadingScreenActivator.Instance.ToogleScreen(false);
                 },
-                (e) => ErrorMessage(errorMsg)
+                (e) =>
+                {
+                    ErrorMessage(errorMsg);
+                    LoadingScreenActivator.Instance.ToogleScreen(false);
+                }
             );
         }
 
