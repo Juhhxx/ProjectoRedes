@@ -10,11 +10,32 @@
 
 * Link para uma Build do Projecto (soon™)
 
-## Petnet Battlerz
+## Netpet Battlerz
 
-O concito do jogo é ser um *monster battler* do estilo *Pokemon*, onde jogadores podem escolher entre 3 criaturas, e 10 ataques para cada
+O concito base do jogo é ser um *monster battler* online, baseado em *Pokemon*, onde jogadores podem escolher entre 3 criaturas (e entre 10 ataques para cada), e batalharem uns contra os outros em batalhas 1 v 1 em turnos.
+
+Estas batalhas podem ser privadas, onde o jogador cria/junta-se a uma sessão privada através de um código, ou públicas, onde um jogador é pareado com outro baseado no seu EXP (de forma a juntar jogadores com niveis próximos)
 
 ## Relatório
+
+## Como Testar o Jogo
+
+Para testar o decorrer de uma batalha, o professor pode realizar uma batalha privada, abrindo duas cópias do jogo e :
+
+* Na primeira, clicar no botão "Host Battle" e "Host";
+
+* Na outra, clicar no botão "Host Battle" e "Join", depois escrever o *join code* que vai aparecer na priemira cópia, e por fim carregar no botão "Connect";
+
+* Denovo na primeira cópia, carregar no botão "Start" depois de ser mostrado que 2 jogadores estão conectados.
+
+Para testar o **Matchmaking**, o professor pode utilizaro  cheat `Ctrl + P` ou `Ctrl + O` para aumentar/diminuir respectivamente o EXP do seu jogador por 100 pontos, depois só precisa de clicar no botão "Find Battle" em duas ou mais cópias do jogo.
+
+> **Nota** :\
+O funcionamento do decorrer das batalhas não se encontra completo :\
+\
+Existem problemas na sincronização da UI (sendo que o jogador que serve de *Host* tem controlo maximo sobre quando o UI é mudado, causado alguma desincronização quando os jogadores passam o texto em tempos diferentes);\
+\
+Não existe a lógica para sair de uma batalha quando esta acaba.
 
 ## Bibliografia
 

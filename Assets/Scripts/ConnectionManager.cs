@@ -190,7 +190,7 @@ public class ConnectionManager : NetworkBehaviour
     private void OnClientDisconnected(ulong clientId)
     {
         ToogleMainMenuClientRpc(true);
-        if (IsServer) Destroy(_serverBattle.gameObject);
+        if (IsServer) Destroy(_serverBattle?.gameObject);
     }
 
     // Start Battle
