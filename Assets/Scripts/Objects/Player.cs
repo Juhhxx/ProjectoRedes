@@ -18,6 +18,7 @@ public class Player : ScriptableObject
     public void SetCreature(Creature creature) => _creature = creature;
     public void SetEXP(int exp)
     {
+        if (exp < 0) exp = 0;
         EXP = exp;
     }
     public void LoadCreature(string name, params string[] moves)

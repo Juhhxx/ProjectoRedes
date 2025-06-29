@@ -1,5 +1,4 @@
 using TMPro;
-using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -28,6 +27,20 @@ public class PlayerController : MonoBehaviour
     public void UpdatePlayer()
     {
         _creatureMenus.UpdateShowcase();
+        _profileText.text = $"{Player.Name} Lv. {Player.Level} ({Player.EXP:0000})";
+    }
+
+    private void IncreaseScore()
+    {
+        if (!AccountManager.Instance.IsLoggedIn) return;
+        _player.SetEXP(_player.EXP + 100);
+        UpdatePlayer();
+    }
+    private void DecreaseScore()
+    {
+        if (!AccountManager.Instance.IsLoggedIn) return;
+        _player.SetEXP(_player.EXP - 100);
+        UpdatePlayer();
     }
 
     private void Awake()
@@ -36,6 +49,15 @@ public class PlayerController : MonoBehaviour
         _creatureMenus.SetPlayer(this);
         _accountManager.SetPlayer(this);
         _profileText.text = "Not Signed In";
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            if (Input.GetKeyDown(KeyCode.P)) IncreaseScore();
+            if (Input.GetKeyDown(KeyCode.O)) DecreaseScore();
+        }
     }
 
 }
