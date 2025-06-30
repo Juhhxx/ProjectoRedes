@@ -33,13 +33,13 @@ public class PlayerController : MonoBehaviour
     private void IncreaseScore()
     {
         if (!AccountManager.Instance.IsLoggedIn) return;
-        _player.SetEXP(_player.EXP + 100);
+        _player.SetEXP(_player.EXP + 500);
         UpdatePlayer();
     }
     private void DecreaseScore()
     {
         if (!AccountManager.Instance.IsLoggedIn) return;
-        _player.SetEXP(_player.EXP - 100);
+        _player.SetEXP(_player.EXP - 500);
         UpdatePlayer();
     }
 

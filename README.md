@@ -14,9 +14,19 @@
 
 O conceito base do jogo é ser um *monster battler* online, baseado em *Pokemon*, onde jogadores podem escolher entre 3 criaturas (e entre 10 ataques para cada), para batalharem uns contra os outros em batalhas 1 v 1 em turnos.
 
+Durante o decorrer de uma batalha, cada jogador deve escolher um ataque a realizar (estes podem ser ataques fisicos, ou booster/nerfers de stats), depois estes são realizados por ordem, baseado na *speed* da criatura que efectuou o ataque. Depois este *loop* é repetido até uma das criaturas tiver 0 HP.
+
 Estas batalhas podem ser privadas, onde o jogador cria/junta-se a uma sessão privada através de um código, ou públicas, onde um jogador é pareado com outro baseado no seu EXP (de forma a juntar jogadores com niveis próximos).
 
 ## Relatório
+
+explicar implemetação, scripts, funcionamento de cada um e proposito
+
+explicar como funciona a coneção online e como a fiz
+
+explicar matchmaking e os valores que o definem
+
+diagram de redes, relay server, host, clients
 
 ## Como Testar o Jogo
 
@@ -28,7 +38,7 @@ Para testar o decorrer de uma batalha, o professor pode realizar uma batalha pri
 
 * Denovo na primeira cópia, carregar no botão "Start" depois de ser mostrado que 2 jogadores estão conectados.
 
-Para testar o **Matchmaking**, o professor pode utilizaro  cheat `Ctrl + P` ou `Ctrl + O` para aumentar/diminuir respectivamente o EXP do seu jogador por 100 pontos, depois só precisa de clicar no botão "Find Battle" em duas ou mais cópias do jogo.
+Para testar o **Matchmaking**, o professor pode utilizaro  cheat `Ctrl + P` ou `Ctrl + O` para aumentar/diminuir respectivamente o EXP do seu jogador por 500 pontos, depois só precisa de clicar no botão "Find Battle" em duas ou mais cópias do jogo.
 
 > **Nota**\
 O funcionamento do decorrer das batalhas não se encontra completo :\
@@ -54,6 +64,10 @@ Não existe a lógica para sair de uma batalha quando esta acaba.
 * [Youtube | Play Online Together Using Relay || Unity Tutorial - Freedom Coding](https://www.youtube.com/watch?v=DXsmhMMH9h4)
 
 * [Youtube | Unity Store Data in Playfab | Interacting with data in PlayFab - Skye Games](https://www.youtube.com/watch?v=KoWpVuta_nE)
+
+* [Youtube | Playlist das Aulas de SRJ 2024/25 - Diogo Andrade](https://www.youtube.com/playlist?list=PLheBz0T_uVP3JaTA4wMs38MgOKiIpDpLG)
+
+* [Moodle | Project MPWyzards usado em Aula - Diogo Andrade](https://moodle.ensinolusofona.pt/mod/resource/view.php?id=441486)
 
 * [Chat GPT | Diversas perguntas sobre como estruturar/resolver problemas no meu código](https://chatgpt.com/share/685f3d20-ef80-8007-ac4e-bbbb51a932e6)
 
