@@ -20,13 +20,22 @@ Estas batalhas podem ser privadas, onde o jogador cria/junta-se a uma sessão pr
 
 ## Relatório
 
+### Funcionamento do Jogo
+
 explicar implemetação, scripts, funcionamento de cada um e proposito
 
-explicar como funciona a coneção online e como a fiz
+### Networking
+
+explicar como funciona a conexão online e como a fiz
+
+### Matchmaking
 
 explicar matchmaking e os valores que o definem
 
-diagram de redes, relay server, host, clients
+### Diagrama de Redes
+
+\
+![a](Images/DiagramRedes.png)
 
 ## Como Testar o Jogo
 
@@ -34,9 +43,23 @@ Para testar o decorrer de uma batalha, o professor pode realizar uma batalha pri
 
 * Na primeira, clicar no botão "Host Battle" e "Host";
 
+![a](Images/GameStartHost.png)
+
+![a](Images/GameStartHostBtt.png)
+
+![a](Images/GameStartHostMenuH.png)
+
 * Na outra, clicar no botão "Host Battle" e "Join", depois escrever o *join code* que vai aparecer na primeira cópia, e por fim carregar no botão "Connect";
 
+![a](Images/GameStartHost.png)
+
+![a](Images/GameStartHostBtt2.png)
+
+![a](Images/GameStartMenuC.png)
+
 * Denovo na primeira cópia, carregar no botão "Start" depois de ser mostrado que 2 jogadores estão conectados.
+
+![a](Images/GameStartBattle.png)
 
 Para testar o **Matchmaking**, o professor pode utilizaro  cheat `Ctrl + P` ou `Ctrl + O` para aumentar/diminuir respectivamente o EXP do seu jogador por 500 pontos, depois só precisa de clicar no botão "Find Battle" em duas ou mais cópias do jogo.
 
