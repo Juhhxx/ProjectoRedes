@@ -14,6 +14,6 @@ public class LoadingScreenActivator : MonoBehaviour
     public void ToogleScreen(bool onoff)
     {
         _loadingScreen.SetActive(onoff);
-        EventSystemUtilities.ToggleNavigation(onoff);
+        EventSystemUtilities.ToggleNavigation(!onoff);
     }
 }
