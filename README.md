@@ -2,7 +2,7 @@
 
 ## Autoria
 
-* Júlia Costa - a22304403
+* **Júlia Costa - a22304403**
 
 ## Link para Repositório Git e Build
 
@@ -61,13 +61,21 @@ Tanto criaturas, como ataques, possuem tipos que interagem entre si. isto pode a
 
 ### Networking
 
-explicar como funciona a conexão online e como a fiz
+Para a implementação de jogos online com matchmaking e login, comecei por fazer uma lista dos passos que precisava de realizar, organizei-a por grau aparente de dificuldade de cada tarefa. A lista foi a seguinte :
+
+1. Implementação de um menu de *Login* que permitisse aos jogadores criar ou entrar num conta;
+
+2. Implmentação de um sistema que salva-se informações sobre os jogadores numa base de dados e que fize-se a gestão das suas contas;
+
+3. Implementação de batalhas privadas entre jogadores usando *Join Codes*;
+
+4. Implementação de batalhas públicas online com *matchmaking*.
 
 ### Matchmaking
 
 O sistema de matchmaking do jogo é feito usando o serviço **Matchmaker** do **Unity**, e é baseado no nível de cada jogador, sendo o objectivo agrupar jogadores com níveis proximos.
 
-Os níveis dos jogadores são calculados através do seu `EXP` utilizando da seguinte fórmula :
+Os níveis dos jogadores são calculados através do seu `EXP` utilizando a seguinte fórmula :
 
 $$ Level = floor( log{_2}( \frac{EXP}{10} + 1) ) $$
 
@@ -154,10 +162,12 @@ Para testar o decorrer de uma batalha, o professor pode realizar uma batalha pri
 
 Para testar o **Matchmaking**, o professor pode utilizaro  cheat `Ctrl + P` ou `Ctrl + O` para aumentar/diminuir respectivamente o EXP do seu jogador por 500 pontos, depois só precisa de clicar no botão "Find Battle" em duas ou mais cópias do jogo.
 
+![a](Images/GameStartMatch.png)
+
 > **Nota**\
 O funcionamento do decorrer das batalhas não se encontra completo :\
 \
-Existem problemas na sincronização da UI (sendo que o jogador que serve de *Host* tem controlo máximo sobre quando o UI é mudado, causando alguma desincronização quando os jogadores passam o texto em tempos diferentes);\
+Existem problemas na sincronização da UI (sendo que o jogador que serve de *Host* tem controlo máximo sobre quando o UI é mudado, causando alguma desincronização quando os jogadores passam o texto em tempos diferentes);
 
 ## Bibliografia
 
@@ -187,7 +197,7 @@ Existem problemas na sincronização da UI (sendo que o jogador que serve de *Ho
 
 ## Agradecimentos
 
-* Mafalda Pinto - Ajuda no conceito e design do jogo (personagens, ataques, etc...)
+* **Mafalda Pinto -** Ajuda no conceito e design do jogo (personagens, ataques, etc...)
 
 ## Referências
 
