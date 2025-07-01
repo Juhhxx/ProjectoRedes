@@ -124,10 +124,11 @@ public class Creature : ScriptableObject
     }
     public void SetHP(float hp) => _currentHP = hp;
 
+    System.Random damageRandom = new System.Random(1);
     public (float, float) TakeDamage(Attack attack)
     {
         Debug.Log($"{attack.Attacker.Name} used {attack.Name} on {Name}");
-        int rnd = UnityEngine.Random.Range(1, 100);
+        int rnd = damageRandom.Next(1, 100);
 
         if (rnd > attack.Accuracy)
         {
@@ -156,9 +157,10 @@ public class Creature : ScriptableObject
 
         return (damage, recoilDamage);
     }
+    
     private float CalculateDamage(Attack attack)
     {
-        float rnd = UnityEngine.Random.Range(217, 255);
+        float rnd = damageRandom.Next(217, 255);
         rnd /= 255;
 
         float damage = (((((2 * attack.Attacker.Owner.Level * attack.CriticalChance()) / 5)
@@ -182,7 +184,7 @@ public class Creature : ScriptableObject
 
             Debug.Log($"APPLYING DAMAGE");
 
-            yield return new WaitForSeconds(0.005f);
+            yield return new WaitForSeconds(0.001f);
         }
     }
 
