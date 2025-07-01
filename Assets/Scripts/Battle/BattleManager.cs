@@ -18,7 +18,10 @@ public class BattleManager : NetworkBehaviour
     [SerializeField] private DialogueManager _dialogueManager;
     private List<string> _playerActions;
     private int _playerDoneReading;
-    
+    private bool _hasWinner;
+    private ulong _winnerID;
+    private string _winnerName;
+
     public event Action OnTurnPassed;
     private int _turn;
     public int Turn
@@ -90,8 +93,8 @@ public class BattleManager : NetworkBehaviour
     public void AddPlayers(List<PlayerData> players)
     {
         if (players.Count == 2)
-                foreach (PlayerData p in players) _playerDataAdd.Add(p);
-        
+            foreach (PlayerData p in players) _playerDataAdd.Add(p);
+
     }
     [ClientRpc]
     private void AddPlayerDatasClientRpc(PlayerData p)
@@ -167,12 +170,21 @@ public class BattleManager : NetworkBehaviour
 
         Debug.Log(damage);
 
+        if (attack.Target.CurrentHP - damage <= 0)
+        {
+            _hasWinner = true;
+            _winnerID = attack.Attacker.Owner.ID;
+            _winnerName = attack.Attacker.Owner.Name;
+        }
+
         if (damage > 0)
         {
             StartCoroutine(attack.Target.ApplyDamage(damage));
 
             if (recoil > 0) StartCoroutine(attack.Attacker.ApplyDamage(recoil));
         }
+
+        Debug.Log($"CHECK OPPONENT HP : {attack.Target.CurrentHP}");
     }
 
     [ClientRpc]
@@ -186,28 +198,19 @@ public class BattleManager : NetworkBehaviour
     {
         _ui.SetUpActionScene();
     }
+
     [ServerRpc(RequireOwnership = false)]
     private void RegisterDoneReadingServerRpc() => _playerDoneReading++;
-    
-
-    private bool CheckWin()
-    {
-        foreach (Player p in _players)
-        {
-            if (p.Creature.CurrentHP == 0)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 
     public IEnumerator BattleStart()
     {
         Debug.Log("START BATTLE COROUTINE");
 
-        while (!CheckWin())
+        while (!_hasWinner)
         {
+            UpdateUIClientRpc();
+
+            Debug.Log($"HAS WINNER : {_hasWinner}");
             Turn++;
 
             yield return new WaitForPlayerActions(() => _playerActions.Count == _actionsListSize);
@@ -235,29 +238,47 @@ public class BattleManager : NetworkBehaviour
 
             // yield return new WaitUntil(() => _playerDoneReading == 2);
 
-            UpdateUIClientRpc();
             _playerDoneReading = 0;
             _playerActions.Clear();
         }
 
-        foreach (Player p in _players)
-        {
-            if (p.Creature.CurrentHP > 0)
-            {
-                p.SetEXP(p.EXP + 10);
-                _dialogueManager.AddDialogue($"{p.Name} WON !!!");
-            }
-        }
+        FinnishBattleClientRpc(_winnerID, _winnerName);
     }
     private void OrganizeActions()
     {
         if (int.Parse(_playerActions[0].Split("|")[2]) < int.Parse(_playerActions[1].Split("|")[2]))
-            {
-                string tmp = _playerActions[0];
+        {
+            string tmp = _playerActions[0];
 
-                _playerActions[0] = _playerActions[1];
-                _playerActions[1] = tmp;
-            }
+            _playerActions[0] = _playerActions[1];
+            _playerActions[1] = tmp;
+        }
+    }
+
+    [ClientRpc]
+    private void FinnishBattleClientRpc(ulong winnerID, string winnerName)
+    {
+        _dialogueManager.StartDialogues($"{winnerName} WON!");
+
+        if (winnerID == NetworkManager.Singleton.LocalClientId)
+        {
+            PlayerController p = FindAnyObjectByType<PlayerController>(0);
+            p.Player.SetEXP(p.Player.EXP + 50);
+            AccountManager.Instance.SavePlayerData(
+                new Dictionary<string, string>()
+                {
+                    { "EXP", p.Player.EXP.ToString() }
+                }
+            );
+        }
+
+        StartCoroutine(NerworkShutdown());
+    }
+    private IEnumerator NerworkShutdown()
+    {
+        yield return new WaitForSeconds(2);
+
+        NetworkManager.Singleton.Shutdown();
     }
 
 }
