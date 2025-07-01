@@ -13,6 +13,5 @@ MonoBehaviour:
   m_Name: PlayerBase
   m_EditorClassIdentifier: 
   <Name>k__BackingField: test
-  <Level>k__BackingField: 0
   <EXP>k__BackingField: 0
-  <CreatureData>k__BackingField: {fileID: 0}
+  <CreatureData>k__BackingField: {fileID: 11400000, guid: bae7b99915c6f3942b439304031f6686, type: 2}
