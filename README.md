@@ -73,6 +73,8 @@ Os niveis dos jogadores são calculados através do seu `EXP` através da seguin
 
 $$ Level = floor( log{_2}( \frac{EXP}{10} + 1) ) $$
 
+![a](Images/LevelCalculationGraph.png)
+
 Para fazer o setup do **Matchmaker** criei primeiro uma *Queue* chamada `PlayerLV`, que apenas criava *tickets* para um máximo de 2 jogadores.
 
 Depois criei uma *Pool* dentro dela, chamada `Default`, com um  *Timeout* de 60 segundos e configurada para funcionar apenas para *Client Hosting*.
