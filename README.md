@@ -40,13 +40,25 @@ Quando os dois jogadroes já escolheram o seu ataque, os mesmos são efectuados 
 
 No fianl ganha o jogador que derrotar a criatura do seu oponente.
 
-Os ataques de cada criatura são calculados de forma a imitar os dos jogos *Pokemon* da primeira geração, e seguem o seguinte cálculo.
+Os ataques de cada criatura são calculados de forma a imitar os dos jogos *Pokemon* da primeira geração [^1], e seguem o seguinte cálculo.
 
 ```c#
+private float CalculateDamage(Attack attack)
+{
+    float rnd = UnityEngine.Random.Range(217, 255);
+    rnd /= 255;
 
+    float damage = (((((2 * attack.Attacker.Owner.Level * attack.CriticalChance()) / 5)
+                    * attack.Power * (attack.Attacker.Attack / Defense)) / 50) + 2)
+                    * attack.GetSTAB() * attack.GetEffectiveness(Type) * rnd;
+
+    return Mathf.Ceil(damage);
+}
 ```
 
 ![a](Images/DiagramaTipos.png)
+
+[^1]: [Damage Calculation : Generation I - Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Generation_I)
 
 ### Networking
 
