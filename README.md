@@ -24,6 +24,30 @@ Estas batalhas podem ser privadas, onde o jogador cria/junta-se a uma sessão pr
 
 explicar implemetação, scripts, funcionamento de cada um e proposito
 
+O funcionamento das batalhas é simples, no inicio cada jogador é apresentado com o meu de ações, onde podem escolher atacar ou ver os *stats* da sua criatura.
+
+![a](Images/BattleStart.png)
+
+Quando o jogador entra no menu de ataques é apresentado com os ataques que escolheu para a sua criatura, escolhendo um deles, fica á espera que o seu oponente faça o mesmo.
+
+![a](Images/BattleAttackBtt.png)
+
+![a](Images/BattleAttackSelect.png)
+
+Quando os dois jogadroes já escolheram o seu ataque, os mesmos são efectuados em ordem (esta decidida através do *stat* de *speed* das criaturas).
+
+![a](Images/Movie_006.gif)
+
+No fianl ganha o jogador que derrotar a criatura do seu oponente.
+
+Os ataques de cada criatura são calculados de forma a imitar os dos jogos *Pokemon* da primeira geração, e seguem o seguinte cálculo.
+
+```c#
+
+```
+
+![a](Images/DiagramaTipos.png)
+
 ### Networking
 
 explicar como funciona a conexão online e como a fiz
