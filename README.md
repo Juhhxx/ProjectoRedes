@@ -59,15 +59,65 @@ Os tipos dos ataques podem afectar a quantidade do dano dado dependendo do tipo 
 
 ![a](Images/DiagramaTipos.png)
 
-[^1]: [Damage Calculation : Generation I - Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Generation_I)
-
 ### Networking
 
 explicar como funciona a conexão online e como a fiz
 
 ### Matchmaking
 
-explicar matchmaking e os valores que o definem
+O sistema de matchmaking do jogo é feito usando o serviço **Matchmaker** do **Unity**, e é baseado no nivel de cada jogador, sendo o objectivo agrupar jogadores com niveis proximos.
+
+Os niveis dos jogadores são calculados através do seu `EXP` através da seguinte formula :
+
+$$ Level = floor( log{_2}( \frac{EXP}{10} + 1) ) $$
+
+Para fazer o setup do **Matchmaker** criei primeiro uma *Queue* chamada `PlayerLV`, que apenas criava *tickets* para um máximo de 2 jogadores.
+
+Depois criei uma *Pool* dentro dela, chamada `Default`, com um  *Timeout* de 60 segundos e configurada para funcionar apenas para *Client Hosting*.
+
+Dentro da *Pool* criei um set de regras que determinam que :
+
+ * Apenas pode ser criada 1 *"Team"*  por jogo;
+
+ * Cada *"Team"* tem de ter 2 jogadores, nem mais nem menos;
+
+ * Na criação de *"Teams"* os jogadores são agrupados com outros cuja a diferença entre *Level* seja menor que 5.
+ 
+Estas regras podem ser lidas no seguinte ficheiro *Json* : 
+
+```json
+{
+  "Name": "Normal",
+  "MatchDefinition": {
+    "Teams": [
+      {
+        "Name": "Battle",
+        "TeamCount": {
+          "Min": 1,
+          "Max": 1
+        },
+        "PlayerCount": {
+          "Min": 2,
+          "Max": 2
+        },
+        "TeamRules": [
+          {
+            "Name": "Level_Range",
+            "Type": "Difference",
+            "Source": "Players.CustomData.LV",
+            "Reference": 5,
+            "Not": false,
+            "EnableRule": true,
+            "Relaxations": []
+          }
+        ]
+      }
+    ],
+    "MatchRules": []
+  },
+  "BackfillEnabled": false
+}
+```
 
 ### Diagrama de Redes
 
@@ -121,6 +171,8 @@ Não existe a lógica para sair de uma batalha quando esta acaba.
 
 * [Youtube | COMPLETE Unity Multiplayer Tutorial (Netcode for Game Objects) - Code Monkey](https://www.youtube.com/watch?v=3yuBOB3VrCk)
 
+* [Youtube | Easy MATCHMAKING in Unity! (Skill based, Platform, Region - Tutorial) - Code Monkey](https://www.youtube.com/watch?v=90Iw1aNbSYE)
+
 * [Youtube | Play Online Together Using Relay || Unity Tutorial - Freedom Coding](https://www.youtube.com/watch?v=DXsmhMMH9h4)
 
 * [Youtube | Unity Store Data in Playfab | Interacting with data in PlayFab - Skye Games](https://www.youtube.com/watch?v=KoWpVuta_nE)
@@ -136,3 +188,5 @@ Não existe a lógica para sair de uma batalha quando esta acaba.
 * Mafalda Pinto - Ajuda no conceito e design do jogo (personagens, ataques, etc...)
 
 ## Referências
+
+[^1]: [Damage Calculation : Generation I - Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Generation_I)
