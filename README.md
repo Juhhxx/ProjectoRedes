@@ -38,7 +38,7 @@ Quando os dois jogadroes já escolheram o seu ataque, os mesmos são efectuados 
 
 ![a](Images/Movie_006.gif)
 
-No fianl ganha o jogador que derrotar a criatura do seu oponente.
+No final ganha o jogador que derrotar a criatura do seu oponente.
 
 Os ataques de cada criatura são calculados de forma a imitar os dos jogos *Pokemon* da primeira geração [^1], e seguem o seguinte cálculo.
 
@@ -55,6 +55,7 @@ private float CalculateDamage(Attack attack)
     return Mathf.Ceil(damage);
 }
 ```
+Os tipos dos ataques podem afectar a quantidade do dano dado dependendo do tipo da criatura que é atacada seguindo a seguinte configuração:
 
 ![a](Images/DiagramaTipos.png)
 
@@ -133,3 +134,5 @@ Não existe a lógica para sair de uma batalha quando esta acaba.
 ## Agradecimentos
 
 * Mafalda Pinto - Ajuda no conceito e design do jogo (personagens, ataques, etc...)
+
+## Referências
