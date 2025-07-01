@@ -12,23 +12,21 @@
 
 ## Netpet Battlerz
 
-O conceito base do jogo é ser um *monster battler* online, baseado em *Pokemon*, onde jogadores podem escolher entre 3 criaturas (e entre 10 ataques para cada), para batalharem uns contra os outros em batalhas 1 v 1 em turnos.
+O conceito base do jogo é ser um *monster battler* online, baseado em *Pokemon*, onde jogadores podem escolher entre 3 criaturas (e entre 10 ataques para cada), para batalharem uns contra os outros em batalhas 1 v 1 por turnos.
 
-Durante o decorrer de uma batalha, cada jogador deve escolher um ataque a realizar (estes podem ser ataques fisicos, ou booster/nerfers de stats), depois estes são realizados por ordem, baseado na *speed* da criatura que efectuou o ataque. Depois este *loop* é repetido até uma das criaturas tiver 0 HP.
+Durante o decorrer de uma batalha, cada jogador deve escolher um ataque a realizar (estes podem ser ataques fisicos, ou booster/nerfers de stats), depois estes são realizados por ordem, baseado na *speed* da criatura que efectuou o ataque. Depois este *loop* é repetido até uma das criaturas ter 0 HP.
 
-Estas batalhas podem ser privadas, onde o jogador cria/junta-se a uma sessão privada através de um código, ou públicas, onde um jogador é pareado com outro baseado no seu EXP (de forma a juntar jogadores com niveis próximos).
+Estas batalhas podem ser privadas, onde o jogador cria/junta-se a uma sessão privada através de um código, ou públicas, onde um jogador é pareado com outro baseado no seu Level (de forma a juntar jogadores com níveis próximos).
 
 ## Relatório
 
 ### Funcionamento do Jogo
 
-explicar implemetação, scripts, funcionamento de cada um e proposito
-
-O funcionamento das batalhas é simples, no inicio cada jogador é apresentado com o meu de ações, onde podem escolher atacar ou ver os *stats* da sua criatura.
+O funcionamento das batalhas é simples, no início cada jogador é apresentado com o menu de ações, onde podem escolher atacar ou ver primeiro os *stats* da sua criatura.
 
 ![a](Images/BattleStart.png)
 
-Quando o jogador entra no menu de ataques é apresentado com os ataques que escolheu para a sua criatura, escolhendo um deles, fica á espera que o seu oponente faça o mesmo.
+Quando o jogador entra no menu de ataques é apresentado com os ataques que selecionou para a sua criatura, escolhendo um deles, e fica à espera que o seu oponente faça o mesmo.
 
 ![a](Images/BattleAttackBtt.png)
 
@@ -45,7 +43,7 @@ Os ataques de cada criatura são calculados de forma a imitar os dos jogos *Poke
 ```c#
 private float CalculateDamage(Attack attack)
 {
-    float rnd = UnityEngine.Random.Range(217, 255);
+    float rnd = damageRandom.Next(217, 255);
     rnd /= 255;
 
     float damage = (((((2 * attack.Attacker.Owner.Level * attack.CriticalChance()) / 5)
@@ -57,7 +55,7 @@ private float CalculateDamage(Attack attack)
 ```
 
 \
-Os tipos dos ataques podem afectar a quantidade do dano dado dependendo do tipo da criatura que é atacada seguindo a seguinte configuração:
+Tanto criaturas, como ataques, possuem tipos que interagem entre si. isto pode aumentar ou diminuir a quantidade de dano dada por ataques de certos tipo a criaturas de outros, seguindo a seguinte configuração :
 
 ![a](Images/DiagramaTipos.png)
 
@@ -67,15 +65,17 @@ explicar como funciona a conexão online e como a fiz
 
 ### Matchmaking
 
-O sistema de matchmaking do jogo é feito usando o serviço **Matchmaker** do **Unity**, e é baseado no nivel de cada jogador, sendo o objectivo agrupar jogadores com niveis proximos.
+O sistema de matchmaking do jogo é feito usando o serviço **Matchmaker** do **Unity**, e é baseado no nível de cada jogador, sendo o objectivo agrupar jogadores com níveis proximos.
 
-Os niveis dos jogadores são calculados através do seu `EXP` através da seguinte formula :
+Os níveis dos jogadores são calculados através do seu `EXP` utilizando da seguinte fórmula :
 
 $$ Level = floor( log{_2}( \frac{EXP}{10} + 1) ) $$
 
+Representação gráfica da equação referida :
+
 ![a](Images/LevelCalculationGraph.png)
 
-Para fazer o setup do **Matchmaker** criei primeiro uma *Queue* chamada `PlayerLV`, que apenas criava *tickets* para um máximo de 2 jogadores.
+Para fazer o setup do **Matchmaker** criei primeiro uma *Queue* chamada `PlayerLV`, que apenas cria *tickets* para um máximo de 2 jogadores.
 
 Depois criei uma *Pool* dentro dela, chamada `Default`, com um  *Timeout* de 60 segundos e configurada para funcionar apenas para *Client Hosting*.
 
@@ -157,9 +157,7 @@ Para testar o **Matchmaking**, o professor pode utilizaro  cheat `Ctrl + P` ou `
 > **Nota**\
 O funcionamento do decorrer das batalhas não se encontra completo :\
 \
-Existem problemas na sincronização da UI (sendo que o jogador que serve de *Host* tem controlo maximo sobre quando o UI é mudado, causado alguma desincronização quando os jogadores passam o texto em tempos diferentes);\
-\
-Não existe a lógica para sair de uma batalha quando esta acaba.
+Existem problemas na sincronização da UI (sendo que o jogador que serve de *Host* tem controlo máximo sobre quando o UI é mudado, causando alguma desincronização quando os jogadores passam o texto em tempos diferentes);\
 
 ## Bibliografia
 
