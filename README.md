@@ -55,6 +55,8 @@ private float CalculateDamage(Attack attack)
     return Mathf.Ceil(damage);
 }
 ```
+
+\
 Os tipos dos ataques podem afectar a quantidade do dano dado dependendo do tipo da criatura que é atacada seguindo a seguinte configuração:
 
 ![a](Images/DiagramaTipos.png)
@@ -77,13 +79,13 @@ Depois criei uma *Pool* dentro dela, chamada `Default`, com um  *Timeout* de 60 
 
 Dentro da *Pool* criei um set de regras que determinam que :
 
- * Apenas pode ser criada 1 *"Team"*  por jogo;
+* Apenas pode ser criada 1 *"Team"*  por jogo;
 
- * Cada *"Team"* tem de ter 2 jogadores, nem mais nem menos;
+* Cada *"Team"* tem de ter 2 jogadores, nem mais nem menos;
 
- * Na criação de *"Teams"* os jogadores são agrupados com outros cuja a diferença entre *Level* seja menor que 5.
- 
-Estas regras podem ser lidas no seguinte ficheiro *Json* : 
+* Na criação de *"Teams"* os jogadores são agrupados com outros cuja a diferença entre *Level* seja menor que 5.
+
+Estas regras podem ser lidas no seguinte ficheiro *Json* :
 
 ```json
 {
