@@ -12,7 +12,6 @@
 
 ## Netpet Battlerz
 
-<div style="text-align: justify">
 O conceito base do jogo é ser um *monster battler* online, baseado em *Pokemon*, onde jogadores podem escolher entre 3 criaturas (e entre 10 ataques para cada), para batalharem uns contra os outros em batalhas 1 v 1 por turnos.
 
 Durante o decorrer de uma batalha, cada jogador deve escolher um ataque a realizar (estes podem ser ataques fisicos, ou booster/nerfers de stats), depois estes são realizados por ordem, baseado na *speed* da criatura que efectuou o ataque. Depois este *loop* é repetido até uma das criaturas ter 0 HP.
@@ -70,7 +69,9 @@ Para a implementação de jogos online com matchmaking e login, comecei por faze
 
 3. Implementação de batalhas privadas entre jogadores usando *Join Codes*;
 
-4. Implementação de batalhas públicas online com *matchmaking*.
+4. Sincronização da informação entre jogadores e uncionamento das batalhas em modo online;
+
+5. Implementação de batalhas públicas online com *matchmaking*.
 
 #### Menu de Login
 
@@ -202,6 +203,10 @@ Como podemos ver criei duas variaveis e dois métodos :
 * O método `SaveData()`, que recebe um dicionário do tipo `Dictionary<string,string>` e manda um *request* ao **Playfab** para guardar os dados enviados. Quando este *request* é executado com sucesso, o método verifica se já existe um dicionário disponível na variável `_userData`, se sim adiciona todos os valores novos e atualiza os que já existiam, depois chama o *delegate* `onSuccess`, que é um parametro do próprio método, com o resultado. Caso o *request* falhe, é chamado o *delegate* `onFail`, também este definido ocmo parametro do método;
 
 * O método `GetData()`, que começa por verificar se o mesmo já está em execução (observando o valor da variável `_isGettingData`), caso esteja, faz um *delay* de 100 milisegundos e verifica denovo, caso não esteja a ser executado, verifica se já existe um dicionário disponível na variável `_userData`, se sim chama o *delegate* `onSuccess` e passa-lhe os resultados como o `_userData`. Caso tudo acima seja falso, o método muda o valro da variável `_isGettingData` para `true` e começa o processo de pedir os dados necessários ao **Playfab**, através, denovo, de um *request*. Se este *request* for executado com sucesso, a variável `_userData` passa a ter o valor dos dados obtidos pelo resultado do *request*, o valor de `_isGettingData` passa a `false` e é chamado o *delegate* `onSuccess`, definido como parametro do método, com o resultado. Se o *request* falhar, o valor de `_isGettingData` passa a `false` e o *delegate* `onFail`, também definido como parametro do método, é chamado com o erro emitido.
+
+### Batalhas Privadas
+
+Para a implementação de batalhas online privadas tive duas implementações, uma utilizando apenas o **Netcode for GameObjects** com conexões via LAN, e outra com o **Netcode  for GameObjects** + **Relay** que já permitia conexões online e sem problemas com a *firewall*. Para o projecto final só usei a segunda abordagem, mas vou falar das duas de forma a expor a minha joranda no desenvolvimento do jogo.
 
 ### Matchmaking
 
@@ -336,5 +341,3 @@ Existem problemas na sincronização da UI (sendo que o jogador que serve de *Ho
 ## Referências
 
 [^1]: [Damage Calculation : Generation I - Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Generation_I)
-
-</div>
