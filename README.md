@@ -55,7 +55,7 @@ private float CalculateDamage(Attack attack)
 ```
 
 \
-Tanto criaturas, como ataques, possuem tipos que interagem entre si. isto pode aumentar ou diminuir a quantidade de dano dada por ataques de certos tipo a criaturas de outros, seguindo a seguinte configuração :
+Tanto criaturas, como ataques, possuem tipos que interagem entre si. Isto pode afectar a quantidade de dano dada por ataques de certos tipo a criaturas de outros, seguindo a seguinte configuração :
 
 ![a](Images/DiagramaTipos.png)
 
@@ -73,7 +73,7 @@ Para a implementação de jogos online com matchmaking e login, comecei por faze
 
 5. Implementação de batalhas públicas online com *matchmaking*.
 
-#### Menu de Login
+#### Login e Criação de Contas
 
 Para fazer um menu de login, comecei por pesquisar online sobre como proceder e encontrei vários tutoriais que recomendavam a intergração do **[Playfab](https://learn.microsoft.com/en-us/gaming/playfab/sdks/unity3d/)** com o **Unity**.
 
