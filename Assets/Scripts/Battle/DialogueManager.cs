@@ -30,6 +30,12 @@ public class DialogueManager : MonoBehaviour
         DialogueEvent d = new DialogueEvent(dialogue, action);
         _dialogueQueue.Enqueue(d);
     }
+    public void ClearDialogues()
+    {
+        StopAllCoroutines();
+        _dialogueQueue.Clear();
+        _dialoguePlaying = false;
+    }
     public void StartDialogues()
     {
         StopAllCoroutines();

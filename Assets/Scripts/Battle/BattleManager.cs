@@ -194,11 +194,17 @@ public class BattleManager : NetworkBehaviour
     }
 
     [ClientRpc]
+    private void ClearDialogueClientRpc()
+    {
+        _dialogueManager.ClearDialogues();
+    }
+
+    [ClientRpc]
     private void UpdateUIClientRpc()
     {
         _ui.SetUpActionScene();
     }
-
+    
     [ServerRpc(RequireOwnership = false)]
     private void RegisterDoneReadingServerRpc() => _playerDoneReading++;
 
@@ -240,6 +246,7 @@ public class BattleManager : NetworkBehaviour
 
             _playerDoneReading = 0;
             _playerActions.Clear();
+            ClearDialogueClientRpc(); // Clear Dialogues list for all clients to prevent de-synchronization
         }
 
         FinnishBattleClientRpc(_winnerID, _winnerName);

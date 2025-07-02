@@ -71,33 +71,40 @@ public class Attack : ScriptableObject
     }
     private void AddModifier(bool negative)
     {
-        foreach (Stats s in Stat)
+        float rand = 0;
+
+        // Do randomize per modifier and not per stat so multi stat modifiers 
+        // are equal
+        if (Randomize)
         {
-            (Stats stat, int amount) = GetModifierAmount(s);
-
-            if (Randomize)
-            {
-                float rand = (float)attackRandom.NextDouble();
-
-                if (rand <= RandomChance) amount = -amount;
-
-                Debug.Log($"{rand} <= {RandomChance}");
-                Debug.Log($"negative? {rand <= RandomChance} Amount {amount}");
-            }
-
-            if (!negative)
-            {
-                StatModifier mod = new(stat, amount, TurnDuration);
-
-                Attacker.AddModifier(this, mod);
-            }
-            else
-            {
-                StatModifier mod = new(stat, -amount, TurnDuration);
-
-                Target.AddModifier(this, mod);
-            }
+            rand = (float)attackRandom.NextDouble();
         }
+
+        foreach (Stats s in Stat)
+            {
+                (Stats stat, int amount) = GetModifierAmount(s);
+
+                if (Randomize)
+                {
+                    if (rand <= RandomChance) amount = -amount;
+
+                    Debug.Log($"{rand} <= {RandomChance}");
+                    Debug.Log($"negative? {rand <= RandomChance} Amount {amount}");
+                }
+
+                if (!negative)
+                {
+                    StatModifier mod = new(stat, amount, TurnDuration);
+
+                    Attacker.AddModifier(this, mod);
+                }
+                else
+                {
+                    StatModifier mod = new(stat, -amount, TurnDuration);
+
+                    Target.AddModifier(this, mod);
+                }
+            }
     }
     private (Stats,int) GetModifierAmount(Stats stat)
     {
