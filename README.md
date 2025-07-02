@@ -12,6 +12,7 @@
 
 ## Netpet Battlerz
 
+<div style="text-align: justify">
 O conceito base do jogo é ser um *monster battler* online, baseado em *Pokemon*, onde jogadores podem escolher entre 3 criaturas (e entre 10 ataques para cada), para batalharem uns contra os outros em batalhas 1 v 1 por turnos.
 
 Durante o decorrer de uma batalha, cada jogador deve escolher um ataque a realizar (estes podem ser ataques fisicos, ou booster/nerfers de stats), depois estes são realizados por ordem, baseado na *speed* da criatura que efectuou o ataque. Depois este *loop* é repetido até uma das criaturas ter 0 HP.
@@ -335,3 +336,5 @@ Existem problemas na sincronização da UI (sendo que o jogador que serve de *Ho
 ## Referências
 
 [^1]: [Damage Calculation : Generation I - Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Generation_I)
+
+</div>
