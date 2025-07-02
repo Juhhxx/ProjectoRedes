@@ -2,6 +2,7 @@ using System.Linq;
 using UnityEngine;
 using NaughtyAttributes;
 using System.Collections.Generic;
+using System;
 
 [CreateAssetMenu(fileName = "Attack", menuName = "Scriptable Objects/Attack")]
 public class Attack : ScriptableObject
@@ -29,6 +30,7 @@ public class Attack : ScriptableObject
     public Creature Target => _target;
     private int _timesUsed;
     public int CurrenPP => PP - _timesUsed;
+    private System.Random attackRandom = new System.Random(2);
 
     public void SetAttacker(Creature creature)
     {
@@ -75,7 +77,7 @@ public class Attack : ScriptableObject
 
             if (Randomize)
             {
-                float rand = Random.Range(0f,1f);
+                float rand = (float)attackRandom.NextDouble();
 
                 if (rand <= RandomChance) amount = -amount;
 
@@ -135,7 +137,7 @@ public class Attack : ScriptableObject
     }
     public float CriticalChance()
     {
-        int rnd = Random.Range(1, 100);
+        int rnd = attackRandom.Next(1, 100);
 
         if (rnd < CritRate) return 2.0f;
         else return 1.0f;
