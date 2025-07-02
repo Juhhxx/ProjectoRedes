@@ -69,7 +69,7 @@ Para a implementação de jogos online com matchmaking e login, comecei por faze
 
 3. Implementação de batalhas privadas entre jogadores usando *Join Codes*;
 
-4. Sincronização da informação entre jogadores e uncionamento das batalhas em modo online;
+4. Sincronização da informação entre jogadores e funcionamento das batalhas em modo online;
 
 5. Implementação de batalhas públicas online com *matchmaking*.
 
@@ -194,19 +194,19 @@ private void GetData(Action<GetUserDataResult> onSuccess, Action<PlayFabError> o
 ```
 
 \
-Como podemos ver criei duas variaveis e dois métodos :
+Como podemos ver criei duas variáveis e dois métodos :
 
 * A variável `_userData` do tipo `Dictionary<string,UserDataRecord>`, que mantem um registo dos valores que estão a ser guardados de forma a não precisar de estar sempre a fazer *requests* para os obter;
 
 * A variável `_isGettingData` do tipo `bool`, que diz se o método `GetData()` está atualmente a colectar dados do **Playfab** ou não;
 
-* O método `SaveData()`, que recebe um dicionário do tipo `Dictionary<string,string>` e manda um *request* ao **Playfab** para guardar os dados enviados. Quando este *request* é executado com sucesso, o método verifica se já existe um dicionário disponível na variável `_userData`, se sim adiciona todos os valores novos e atualiza os que já existiam, depois chama o *delegate* `onSuccess`, que é um parametro do próprio método, com o resultado. Caso o *request* falhe, é chamado o *delegate* `onFail`, também este definido ocmo parametro do método;
+* O método `SaveData()`, que recebe um dicionário do tipo `Dictionary<string,string>` e manda um *request* ao **Playfab** para guardar os dados enviados. Quando este *request* é executado com sucesso, o método verifica se já existe um dicionário disponível na variável `_userData`, se sim adiciona todos os valores novos e atualiza os que já existiam, depois chama o *delegate* `onSuccess`, que é um parâmetro do próprio método, com o resultado. Caso o *request* falhe, é chamado o *delegate* `onFail`, também este definido como parâmetro do método;
 
-* O método `GetData()`, que começa por verificar se o mesmo já está em execução (observando o valor da variável `_isGettingData`), caso esteja, faz um *delay* de 100 milisegundos e verifica denovo, caso não esteja a ser executado, verifica se já existe um dicionário disponível na variável `_userData`, se sim chama o *delegate* `onSuccess` e passa-lhe os resultados como o `_userData`. Caso tudo acima seja falso, o método muda o valro da variável `_isGettingData` para `true` e começa o processo de pedir os dados necessários ao **Playfab**, através, denovo, de um *request*. Se este *request* for executado com sucesso, a variável `_userData` passa a ter o valor dos dados obtidos pelo resultado do *request*, o valor de `_isGettingData` passa a `false` e é chamado o *delegate* `onSuccess`, definido como parametro do método, com o resultado. Se o *request* falhar, o valor de `_isGettingData` passa a `false` e o *delegate* `onFail`, também definido como parametro do método, é chamado com o erro emitido.
+* O método `GetData()`, que começa por verificar se o mesmo já está em execução (observando o valor da variável `_isGettingData`), caso esteja, faz um *delay* de 100 milisegundos e verifica denovo, caso não esteja a ser executado, verifica se já existe um dicionário disponível na variável `_userData`, se sim chama o *delegate* `onSuccess` e passa-lhe os resultados como o `_userData`. Caso tudo acima seja falso, o método muda o valor da variável `_isGettingData` para `true` e começa o processo de pedir os dados necessários ao **Playfab**, através, denovo, de um *request*. Se este *request* for executado com sucesso, a variável `_userData` passa a ter o valor dos dados obtidos pelo resultado do *request*, o valor de `_isGettingData` passa a `false` e é chamado o *delegate* `onSuccess`, definido como parâmetro do método, com o resultado. Se o *request* falhar, o valor de `_isGettingData` passa a `false` e o *delegate* `onFail`, também definido como parâmetro do método, é chamado com o erro emitido.
 
-### Batalhas Privadas
+#### Batalhas Privadas
 
-Para a implementação de batalhas online privadas tive duas implementações, uma utilizando apenas o **Netcode for GameObjects** com conexões via LAN, e outra com o **Netcode  for GameObjects** + **Relay** que já permitia conexões online e sem problemas com a *firewall*. Para o projecto final só usei a segunda abordagem, mas vou falar das duas de forma a expor a minha joranda no desenvolvimento do jogo.
+Para a implementação de batalhas online privadas tive duas implementações, uma utilizando apenas o **Netcode for GameObjects** com conexões via LAN, e outra com o **Netcode  for GameObjects** + **Relay** que já permitia conexões online e sem problemas com a *firewall*. Para o projecto final só usei a segunda abordagem, mas vou falar das duas de forma a expor todo o processo do desenvolvimento do jogo.
 
 ### Matchmaking
 
