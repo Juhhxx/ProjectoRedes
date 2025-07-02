@@ -125,9 +125,9 @@ public void LogIntoAccount(string username, string password, Action success = nu
 \
 Como podemos ver criei dois métodos :
 
-* O `CreateAccount()`, que recebe um *username* e uma *password* e envia um *request* através da SDK do **Playfab** para criar uma conta com os mesmos parâmetros;
+* O método `CreateAccount()`, que recebe um *username* e uma *password* e envia um *request* através da SDK do **Playfab** para criar uma conta com os mesmos parâmetros;
 
-* E o `LogIntoAccount()`, que também recebe um *username* e uma *password*, mas envia um *request* ao **Playfab** para realizar o login numa conta.
+* O método `LogIntoAccount()`, que também recebe um *username* e uma *password*, mas envia um *request* ao **Playfab** para realizar o login numa conta.
 
 Este código, juntamente com outro *script* que controla a parte do UI, já me permitiu fazer o login e criação de contas sem problemas.
 
@@ -192,11 +192,15 @@ private void GetData(Action<GetUserDataResult> onSuccess, Action<PlayFabError> o
 ```
 
 \
-Como podemos ver criei dois métodos :
+Como podemos ver criei duas variaveis e dois métodos :
 
-* O `SaveData()`
+* A variável `_userData` do tipo `Dictionary<string,UserDataRecord>`, que mantem um registo dos valores que estão a ser guardados de forma a não precisar de estar sempre a fazer *requests* para os obter;
 
-* E o `GetData()`
+* A variável `_isGettingData` do tipo `bool`, que diz se o método `GetData()` está atualmente a colectar dados do **Playfab** ou não;
+
+* O método `SaveData()`, que recebe um dicionário do tipo `Dictionary<string,string>` e manda um *request* ao **Playfab** para guardar os dados enviados. Quando este *request* é executado com sucesso, o método verifica se já existe um dicionário disponível na variável `_userData`, se sim adiciona todos os valores novos e atualiza os que já existiam, depois chama o *delegate* `onSuccess`, que é um parametro do próprio método, com o resultado. Caso o *request* falhe, é chamado o *delegate* `onFail`, também este definido ocmo parametro do método;
+
+* O método `GetData()`, que começa por verificar se o mesmo já está em execução (observando o valor da variável `_isGettingData`), caso esteja, faz um *delay* de 100 milisegundos e verifica denovo, caso não esteja a ser executado, verifica se já existe um dicionário disponível na variável `_userData`, se sim chama o *delegate* `onSuccess` e passa-lhe os resultados como o `_userData`. Caso tudo acima seja falso, o método muda o valro da variável `_isGettingData` para `true` e começa o processo de pedir os dados necessários ao **Playfab**, através, denovo, de um *request*. Se este *request* for executado com sucesso, a variável `_userData` passa a ter o valor dos dados obtidos pelo resultado do *request*, o valor de `_isGettingData` passa a `false` e é chamado o *delegate* `onSuccess`, definido como parametro do método, com o resultado. Se o *request* falhar, o valor de `_isGettingData` passa a `false` e o *delegate* `onFail`, também definido como parametro do método, é chamado com o erro emitido.
 
 ### Matchmaking
 
@@ -204,7 +208,7 @@ O sistema de matchmaking do jogo é feito usando o serviço **Matchmaker** do **
 
 Os níveis dos jogadores são calculados através do seu `EXP` utilizando a seguinte fórmula :
 
-$$ Level = floor( log{_2}( \frac{EXP}{10} + 1) ) $$
+$$ Level = floor \left( log{_2} \left( \frac{EXP}{10} + 1 \right) \right) $$
 
 Representação gráfica da equação referida :
 
@@ -287,7 +291,7 @@ Para testar o decorrer de uma batalha, o professor pode realizar uma batalha pri
 
 ![a](Images/GameStartBattle.png)
 
-Para testar o **Matchmaking**, o professor pode utilizaro  cheat `Ctrl + P` ou `Ctrl + O` para aumentar/diminuir respectivamente o EXP do seu jogador por 500 pontos, depois só precisa de clicar no botão "Find Battle" em duas ou mais cópias do jogo.
+Para testar o **Matchmaking**, o professor pode utilizar o  cheat `Ctrl + P` ou `Ctrl + O` para aumentar/diminuir respectivamente o EXP do seu jogador por 500 pontos, depois só precisa de clicar no botão "Find Battle" em duas ou mais cópias do jogo.
 
 ![a](Images/GameStartMatch.png)
 
