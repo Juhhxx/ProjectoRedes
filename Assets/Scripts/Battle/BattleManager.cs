@@ -279,6 +279,7 @@ public class BattleManager : NetworkBehaviour
         yield return new WaitForSeconds(2);
 
         NetworkManager.Singleton.Shutdown();
+        ConnectionManager.Instance.ToogleMainMenu(true);
     }
 
 }

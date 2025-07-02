@@ -229,4 +229,9 @@ public class ConnectionManager : NetworkBehaviour
         _mainMenu.SetActive(onoff);
     }
 
+    public void ToogleMainMenu(bool onoff)
+    {
+        _mainMenu.SetActive(onoff);
+    }
+
 }
