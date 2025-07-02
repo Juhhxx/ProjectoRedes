@@ -61,11 +61,11 @@ Tanto criaturas, como ataques, possuem tipos que interagem entre si. isto pode a
 
 ### Networking
 
-Para a implementação de jogos online com matchmaking e login, comecei por fazer uma lista dos passos que precisava de realizar, organizei-a por grau aparente de dificuldade de cada tarefa. A lista foi a seguinte :
+Para a implementação de jogos online com matchmaking e login, comecei por fazer uma lista dos passos que precisava de realizar e organizei-a por grau de dificuldade aparente de cada tarefa. A lista foi a seguinte :
 
 1. Implementação de um menu de *Login* que permitisse aos jogadores criar ou entrar numa conta;
 
-2. Implmentação de um sistema que salva-se informações sobre os jogadores numa base de dados e que fizesse a gestão das suas contas;
+2. Implementação de um sistema que salvasse informações sobre os jogadores numa base de dados e que fizesse a gestão das suas contas;
 
 3. Implementação de batalhas privadas entre jogadores usando *Join Codes*;
 
@@ -73,9 +73,9 @@ Para a implementação de jogos online com matchmaking e login, comecei por faze
 
 #### Menu de Login
 
-Para fazer um menu de login, comecei por pesquisar online sobre como proceder e encontrei vários tutoriais que recomendavam a intergração com o **Unity** do **[Playfab](https://learn.microsoft.com/en-us/gaming/playfab/sdks/unity3d/)**.
+Para fazer um menu de login, comecei por pesquisar online sobre como proceder e encontrei vários tutoriais que recomendavam a intergração do **[Playfab](https://learn.microsoft.com/en-us/gaming/playfab/sdks/unity3d/)** com o **Unity**.
 
-Depois de ver alguns tutorias, comecei a fazer a implementação do meu sistema de gestão de contas. Criei um script chamado `Account Manager` e escrevi os seguintes métodos utilizando a SDK para o **Unity** do **Playfab** :
+Depois de ver alguns tutorias, comecei a fazer a implementação do meu sistema de gestão de contas. Criei um script chamado `Account Manager` e escrevi os seguintes métodos utilizando a SDK do **Playfab** para o **Unity** :
 
 ```c#
 public void CreateAccount(string username, string password, Action success = null, Action<string> fail = null)
@@ -125,15 +125,15 @@ public void LogIntoAccount(string username, string password, Action success = nu
 \
 Como podemos ver criei dois métodos :
 
-* O `CreateAccount()`, que recebe um *uername* e uma *password* e envia um *request* através da SDK do **Playfab** para criar uma conta com os mesmos parametros;
+* O `CreateAccount()`, que recebe um *username* e uma *password* e envia um *request* através da SDK do **Playfab** para criar uma conta com os mesmos parâmetros;
 
 * E o `LogIntoAccount()`, que também recebe um *username* e uma *password*, mas envia um *request* ao **Playfab** para realizar o login numa conta.
 
-Este código, com por cima outro *script* que controlava a parte do UI, já me permitiu fazer o login e criação de contas sem problemas.
+Este código, juntamente com outro *script* que controla a parte do UI, já me permitiu fazer o login e criação de contas sem problemas.
 
-#### Getão de Dados dos Jogadores
+#### Gestão de Dados dos Jogadores
 
-Para isto tabém decidi utilizar a SDK do **Playfab**, visto que vi que a mesma disponibilizava, por cada conta registada, um conjunto de *PlayerData* que me permitia guardar informações sobre os jogadores. Estes dados podiam ser passados e guardados através do Unity como um dicionário do tipo `Dictionary<string,string>`, e mais tarde, lidos e usados para dar *setup* aos valores necessários.
+Para isto também decidi utilizar a SDK do **Playfab**, visto que vi que a mesma disponibilizava, por cada conta registada, um conjunto de *PlayerData* que me permitia guardar informações sobre os jogadores. Estes dados podiam ser passados e guardados através do Unity como um dicionário do tipo `Dictionary<string,string>`, e mais tarde, lidos e usados para dar *setup* aos valores necessários.
 
 Com isto em mente, e ajuda de um tutorial, escrevi os seguintes métodos no script `Account Manager` :
 
@@ -191,6 +191,7 @@ private void GetData(Action<GetUserDataResult> onSuccess, Action<PlayFabError> o
 }
 ```
 
+\
 Como podemos ver criei dois métodos :
 
 * O `SaveData()`
