@@ -77,7 +77,7 @@ Para a implementação de jogos online com matchmaking e login, comecei por faze
 
 Para fazer um menu de login, comecei por pesquisar online sobre como proceder e encontrei vários tutoriais que recomendavam a intergração do **[Playfab](https://learn.microsoft.com/en-us/gaming/playfab/sdks/unity3d/)** com o **Unity**.
 
-Depois de ver alguns tutorias, comecei a fazer a implementação do meu sistema de gestão de contas. Criei um script chamado `Account Manager` e escrevi os seguintes métodos utilizando a SDK do **Playfab** para o **Unity** :
+Depois de ver alguns tutorias, comecei a fazer a implementação do meu sistema de gestão de contas. Criei um *script* chamado `AccountManager` e escrevi os seguintes métodos utilizando a SDK do **Playfab** para o **Unity** :
 
 ```c#
 public void CreateAccount(string username, string password, Action success = null, Action<string> fail = null)
@@ -137,7 +137,7 @@ Este código, juntamente com outro *script* que controla a parte do UI, já me p
 
 Para isto também decidi utilizar a SDK do **Playfab**, visto que vi que a mesma disponibilizava, por cada conta registada, um conjunto de *PlayerData* que me permitia guardar informações sobre os jogadores. Estes dados podiam ser passados e guardados através do Unity como um dicionário do tipo `Dictionary<string,string>`, e mais tarde, lidos e usados para dar *setup* aos valores necessários.
 
-Com isto em mente, e ajuda de um tutorial, escrevi os seguintes métodos no script `Account Manager` :
+Com isto em mente, e ajuda de um tutorial, escrevi os seguintes métodos no *script* `AccountManager` :
 
 ```c#
 private static Dictionary<string, UserDataRecord> _userData;
@@ -206,7 +206,64 @@ Como podemos ver criei duas variáveis e dois métodos :
 
 #### Batalhas Privadas
 
-Para a implementação de batalhas online privadas tive duas implementações, uma utilizando apenas o **Netcode for GameObjects** com conexões via LAN, e outra com o **Netcode  for GameObjects** + **Relay** que já permitia conexões online e sem problemas com a *firewall*. Para o projecto final só usei a segunda abordagem, mas vou falar das duas de forma a expor todo o processo do desenvolvimento do jogo.
+Para a implementação de batalhas online privadas tive duas implementações, uma utilizando apenas o **Netcode for GameObjects** com conexões via LAN, e outra com o **Netcode  for GameObjects** + **Relay** que já permitia conexões online e sem problemas com a *firewall*. Para o projecto final só usei a segunda abordagem, mas vou falar das duas de forma a expor todo o processo do desenvolvimento do jogo e porque apenas troquei para a abordagem com o **Relay** mais tarde no projecto.
+
+Para primeira implementação, que funcionava apenas por LAN, comecei por procurar por vários tutoriais na internet sobre o **Netcode for GameObjects** e por ver a playlist das aulas da cadeira. Percebi rapidamente que criar a conexão entre os jogadores iria ser bastante fácil, então comecei o trabalho.
+
+Para começar, importei todos os *packages* necessários da *Package Manager*, depois criei um novo `GameObject` na minha cena chamado `NetworkManager` e adicionei-lhe o componente do mesmo nome e fiz o *setup* necessário (criação do *transport*). Depois comecei por criar um novo *script* para gerir todas as conexões no jogo chamado `ConnectionManager` com os seguintes métodos :
+
+```c#
+ public string StartHosting()
+{
+    string adress = GetLocalIPv4();
+
+    UnityTransport transport = NetworkManager.Singleton
+                            .GetComponent<UnityTransport>();
+
+    transport.SetConnectionData(adress, 7777);
+
+    NetworkManager.Singleton.StartHost();
+
+    return adress;
+}
+
+public bool StartClientLAN(string code)
+{
+    string adress = code;
+
+    UnityTransport transport = NetworkManager.Singleton
+                            .GetComponent<UnityTransport>();
+
+    transport.SetConnectionData(adress, 7777);
+
+    bool result = NetworkManager.Singleton.StartClient();
+
+    return result;
+}
+
+// Get Local IP Adress
+private string GetLocalIPv4()
+{
+return Dns.GetHostEntry(Dns.GetHostName())
+.AddressList.First(
+f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+.ToString();
+}
+```
+
+Como podemos ver criei três métodos :
+
+* O método `StartHosting()`, que começa por recolher o adereço IPv4 da máquina onde o jogo está a rodar. Depois, utiliza esse IP para dar *setup* ao `UnityTransport`, utilizando o método `SetConnectionData(int adress, ulong port)`. No final simplesmente pede ao `NetworkManager`para começar o *hosting*;
+
+* O método `StartClientLAN()`, que recebe um *join code*, este é utilizado para o *setup* do `UnityTransport` da mesma forma que o método anterior. No entanto, no final, este pede ao `NetworkManager` para começar um cliente, este que se conectará ao *host* pré-establecido;
+
+* O método `GetLocalIPv4()`, que apenas serve para captar o adereço IPv4 da máquina atual.
+
+Esta solução funcionava, mas tinha os seus problemas, como por exemplo :
+
+* A conexão era apenas realizada em LAN, ou seja, jogadores que não estão conectados à mesma rede wifi não podem jogar juntos;
+
+* Este tipo de conexão pode causar problemas com a *firewall* e normalmente apareçe sempre um aviso do Windows em relação a isso.
 
 ### Matchmaking
 
@@ -307,6 +364,8 @@ O funcionamento do decorrer das batalhas não se encontra completo :\
 Existem problemas na sincronização da UI (sendo que o jogador que serve de *Host* tem controlo máximo sobre quando o UI é mudado, causando alguma desincronização quando os jogadores passam o texto em tempos diferentes);
 
 ## Bibliografia
+
+* [Unity Discussions | Get the device IP address from Unity](https://discussions.unity.com/t/get-the-device-ip-address-from-unity/235351/2)
 
 * [Unity Discussions | Is Matchmaking Compatibale with Relay](https://discussions.unity.com/t/is-matchmaking-compatible-with-relay/895231/8)
 
