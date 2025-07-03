@@ -265,6 +265,84 @@ Esta solução funcionava, mas tinha os seus problemas, como por exemplo :
 
 * Este tipo de conexão pode causar problemas com a *firewall* e normalmente apareçe sempre um aviso do Windows em relação a isso.
 
+\
+Devido a estes problemas decidi então mudar para utilizar a abordagem com o **Relay** do **Unity**. Vendo alguns alguns tutoriais percebi que esta tambem seria bastante simples, então comecei por modificar os métodos anteriores (e por apagar o `GetLocalIPv4()`, já que este já não seria necessário) e acrescentar um novo. Acabei com os seguintes métodos no *script* `ConnectionManager :
+
+```c#
+private async Task InitializeUnityServices()
+{
+    try
+    {
+        await UnityServices.InitializeAsync();
+        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
+        Debug.Log($"Successful Login for Player {AuthenticationService.Instance.PlayerId}");
+    }
+    catch (Exception e)
+    {
+        Debug.Log($"Account Sign In Error : {e}");
+    }
+}
+
+public async Task<string> StartPrivateHosting()
+{
+    LoadingScreenActivator.Instance.ToogleScreen(true); // UI code
+
+    await InitializeUnityServices();
+
+    // Get Relay Allocation
+    Allocation allocation = await RelayService.Instance.CreateAllocationAsync(2);
+
+    UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+
+    // Create RelayServerData
+    RelayServerData relayData = AllocationUtils.ToRelayServerData(allocation, "dtls");
+
+    // Set UnityTransport Server Data
+    transport.SetRelayServerData(relayData);
+
+    // Get the Join Code
+    string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+
+    LoadingScreenActivator.Instance.ToogleScreen(false);
+
+    // If the Server started, return join code, if not, return null
+    return NetworkManager.Singleton.StartHost() ? joinCode : null;
+}
+
+// Client code
+public async Task<bool> StartPrivateClient(string joinCode)
+{
+    await InitializeUnityServices();
+
+    // Get join allocation from Relay
+    JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+
+    UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+
+    // Create RelayServerData
+    RelayServerData relayData = AllocationUtils.ToRelayServerData(joinAllocation, "dtls");
+
+    // Set UnityTransport Server Data
+    transport.SetRelayServerData(relayData);
+
+    // Return the result of the StartClient method
+    return NetworkManager.Singleton.StartClient();
+}
+```
+
+Como podemos ver, agora tenho três métodos :
+
+* O método `InitializeUnityServices()`, que inicializa os serviços do **Unity** e autentica uma conta anónima no **AuthenticationService** (neste caso como já faço o tratamento de contas através do **Playfab** não preciso de ter contas especificas do **Unity**), isto é importante para o **Unity** conseguir gerir as conexões online através de outros dos seus serviços;
+
+* O método `StartPrivateHosting()`, que começa por inicializar os serviços do **Unity** com o método `InitializeUnityServices()`. Depois pede ao serviço de **Relay** do **Unity** por uma *allocation* para dois jogadores se conectarem. Quando essa *allocation* for recebida, cria um `RelayServerData`, que vai guardar as informações sobre o servidor que estamos a criar, para isto é dada a *allocation* e o tipo de conexão que é pretendido (neste caso usei o dtls porque me parecia ser o mais apropriado segundo em todos os tutoriais que vi). Estes dados são depois passados ao `UnityTransport` através do método `SetRelayServerData()`, de forma a configurar a conexão que vai ser feita. Depois de ter o *transport* configurado, pede ao serviço de **Relay** para fornecer um *join code* para a *allocation* recebida. Por fim, é chamado o `NetworkManager` a quem pedimos que começe um *host*, se este for iniciado com sucesso, o método devolve o *join code* recebido, se não, devolve *null*;
+
+* O método `StartPrivateClient()`, que faz, na maior parte, o mesmo processo que o `StartPrivateHosting()`, mas ao invés de pedir uma `allocation` nova ao serviço de **Relay**, usa um *join code*, que recebe como parâmetro, e pede para se juntar à *allocation* com o mesmo código. Depois disso o funcionamento do método é igual, até ao final, onde invés de começar um *host*, pede ao `NetworkManager` para começar um *client*.
+
+#### Batalhas Públicas
+
+#### Sincronização das Batalhas
+
 ### Diagrama de Arquitetura Redes
 
 \

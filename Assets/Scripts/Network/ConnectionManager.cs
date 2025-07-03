@@ -1,20 +1,19 @@
-using Unity.Netcode;
-using UnityEngine;
-using Unity.Netcode.Transports.UTP;
 using System;
-using System.Net;
-using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
+using UnityEngine;
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using Unity.Services.Core;
 using Unity.Services.Authentication;
 using Unity.Services.Matchmaker;
 using Unity.Services.Matchmaker.Models;
 using Unity.Services.Multiplayer;
-using System.Threading.Tasks;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using Unity.Networking.Transport.Relay;
+
 public class ConnectionManager : NetworkBehaviour
 {
     [Header("General")]
