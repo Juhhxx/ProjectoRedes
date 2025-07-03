@@ -210,7 +210,7 @@ Para a implementação de batalhas online privadas tive duas implementações, u
 
 Para primeira implementação, que funcionava apenas por LAN, comecei por procurar por vários tutoriais na internet sobre o **Netcode for GameObjects** e por ver a playlist das aulas da cadeira. Percebi rapidamente que criar a conexão entre os jogadores iria ser bastante fácil, então comecei o trabalho.
 
-Para começar, importei todos os *packages* necessários da *Package Manager*, depois criei um novo `GameObject` na minha cena chamado `NetworkManager` e adicionei-lhe o componente do mesmo nome e fiz o *setup* necessário (criação do *transport*). Depois comecei por criar um novo *script* para gerir todas as conexões no jogo chamado `ConnectionManager` com os seguintes métodos :
+Para começar, importei todos os *packages* necessários do *Package Manager*, depois criei um novo `GameObject` na minha cena chamado `NetworkManager`, adicionei-lhe o componente do mesmo nome e fiz o *setup* necessário (criação do *transport*). Depois comecei por criar um novo *script* para gerir todas as conexões no jogo chamado `ConnectionManager` com os seguintes métodos :
 
 ```c#
  public string StartHosting()
@@ -253,17 +253,22 @@ f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
 
 Como podemos ver criei três métodos :
 
-* O método `StartHosting()`, que começa por recolher o adereço IPv4 da máquina onde o jogo está a rodar. Depois, utiliza esse IP para dar *setup* ao `UnityTransport`, utilizando o método `SetConnectionData(int adress, ulong port)`. No final simplesmente pede ao `NetworkManager`para começar o *hosting*;
+* O método `StartHosting()`, que começa por recolher o adereço IPv4 da máquina onde o jogo está a rodar. Depois, utiliza esse IP para dar *setup* ao `UnityTransport`, utilizando o método `SetConnectionData(int address, ulong port)`. No final simplesmente pede ao `NetworkManager`para começar o *hosting*;
 
-* O método `StartClientLAN()`, que recebe um *join code*, este é utilizado para o *setup* do `UnityTransport` da mesma forma que o método anterior. No entanto, no final, este pede ao `NetworkManager` para começar um cliente, este que se conectará ao *host* pré-establecido;
+* O método `StartClientLAN()`, que recebe um *join code*, este é utilizado para o *setup* do `UnityTransport` da mesma forma que o método anterior. No entanto, no final, este pede ao `NetworkManager` para começar um cliente, que se conectará ao *host* pré-establecido;
 
-* O método `GetLocalIPv4()`, que apenas serve para captar o adereço IPv4 da máquina atual.
+* O método `GetLocalIPv4()`, que apenas serve para captar o adereço IPv4 da máquina actual.
 
 Esta solução funcionava, mas tinha os seus problemas, como por exemplo :
 
 * A conexão era apenas realizada em LAN, ou seja, jogadores que não estão conectados à mesma rede wifi não podem jogar juntos;
 
 * Este tipo de conexão pode causar problemas com a *firewall* e normalmente apareçe sempre um aviso do Windows em relação a isso.
+
+### Diagrama de Arquitetura Redes
+
+\
+![a](Images/DiagramRedes.png)
 
 ### Matchmaking
 
@@ -325,10 +330,9 @@ Estas regras podem ser lidas no seguinte ficheiro *Json* :
 }
 ```
 
-### Diagrama de Redes
+## Análise de Bandwidth
 
-\
-![a](Images/DiagramRedes.png)
+a
 
 ## Como Testar o Jogo
 
