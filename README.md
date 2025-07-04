@@ -409,6 +409,8 @@ Como podemos ver só criei um método :
 
 * O método `FindMatch()`, que começa por inicializar os serviços do **Unity**, assim como os métodos das batalhas privadas. Depois tenta criar um `MatchMakerOptions`, que guarda a informação relacionada ao serviço **Matchmaker** (*Queue* a ser usada, propriedades do jogador importantes para o pareamento), um `SessionOptions`, que guarda informações sobre a sessão de jogo a ser criada (número de jogadores) e é definida como sendo uma sessão de **Relay**, e um `CancellationTokenSource`, que nos deixa parar a sessão criada quando for necessário. Estes três objectos são depois usados para tentar pedir ao serviço de `Multiplayer` para começar uma sessão com **matchmaking** chamando o método `MatchmakeSessionAsync()`. Depois disto o método chama o serviço **Matchmaker** e pede-lhe para obter os resultados da sessão criada, passando o seu *id* como parâmetro. Esta operação esta encapsulada num bloco *try catch*, de froma a controlar os erros que possam acontecer, caso aconteçem é apenas imprimida uma mensagem na consola do **Unity**, ou no caso de uma *build*, esta fica registada no ficheiro *Player.log*.
 
+Para informações mais específicas em relação a como funciona o *matchmaking*, refir à secção **Matchmaking**.
+
 #### Sincronização das Batalhas
 
 Para fazer a sincronização das batalhas, de forma a permitir que 2 jogadores conseguissem jogar um contra o outro, comecei por pesquisar por vários exemplos em tutorias no **Youtube** e também no projecto dado nas aulas.
@@ -877,6 +879,8 @@ Como podemos ver criei vários métodos importantes, dos quais :
 * O método `FinnishBattleClientRPC()`e o método `NetworkShutdown()`, que tratam de acabar a batalha e desconectar os *clients* da partida. Sendo que o primeiro trata de mostrar no UI o nome do vencedor e de dar ao devido os seus pontos de EXP, e o segundo de desconectar os *clients* da sessão com um pequeno *delay*.
 
 * Os vários métodos de atualização de UI como `UpdateDialogueClientRPC()`, `UpdateUIClientRPC()` e `ClearDialogueClientRPC()`, que apenas servem para fazer mudanças no UI de todos os *clients* em simultâneo.
+
+É de notar que muitos destes métodos são RPCs (Remote Procedure Calls) que basicamente nos deixam ter um método que pode ser chamado pelo servidor, e executado em todos os *clients* (*ClientRPCs*), ou por um *client* e executado no servidor. Isto é útil quando queremos fazer sincronização de eventos ou variáveis ou quando queremos que o servidor tenha de dar permissão aos *clients* para poderem fazer algo.
 
 ### Diagrama de Arquitetura Redes
 
