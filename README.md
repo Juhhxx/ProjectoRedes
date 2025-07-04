@@ -414,7 +414,17 @@ Estas regras podem ser lidas no seguinte ficheiro *Json* :
 
 ## Análise de Bandwidth
 
-Depois de realizar 1 jogo entre 2 computadores diferentes
+Depois de realizar alguns jogos, analizei os dados do meu projecto na **Unity Cloud**, mais especificamente os dados relacionados ao uso do **Relay**.
+
+![a](Images/TotalBandwidth.png)
+
+![a](Images/AverageBytes.png)
+
+Obeservando os gráficos vi que, por 1 hora de realização de batalhas (não consecutivas), foram consumidos no total 157,3 KiB (161.075,2 bytes), e por cada sessão de jogo individual não se chegaram a gastar mais de 27 KiB (27.648 bytes). Tendo em conta que durante esta hora foram hosteadas 24 alocações (algumas delas que não chegaram a fazer uma partida completa), o uso médio em KiB é estimado como ~10 KiB por batalha.
+
+Conseguimos também ver que o número de KiB em médio por usuários simultâneos (CCU) é de 61.5 KiB/CCU.
+
+Nenhum destes valores chega perto de atingir o valor dado pelo *tier* grátis do serviço de **Relay** do **Unity**. Assim acabei por concluir que o jogo podia ficar de pé vários meses (tendo em conta que também não estou á espera de uma afluencia gigante de jogadores) apenas utilizando os serviços grátis do **Unity** sem problemas.
 
 ## Como Testar o Jogo
 
@@ -451,9 +461,6 @@ Existem problemas na sincronização da UI (sendo que o jogador que serve de *Ho
 
 \
 Ás vezes existem problemas nos cálculos do dano, podendo haver divergências entre clientes.
-
-\
-Entrar em duas batalhas na mesma sessão de jogo (sem fechar e abrir o programa) pode causar problemas.
 
 ## Bibliografia
 
