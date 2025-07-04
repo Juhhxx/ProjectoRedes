@@ -413,7 +413,470 @@ Como podemos ver só criei um método :
 
 Para fazer a sincronização das batalhas, de forma a permitir que 2 jogadores conseguissem jogar um contra o outro, comecei por pesquisar por vários exemplos em tutorias no **Youtube** e também no projecto dado nas aulas.
 
-Para o funcionamento das batalhass tenho 3 *scripts* essenciais, o `ConnectionManager`, que está sempre em cena e é responsável tanto pelas conexões entre os jogadores, como por agregar todas as informações necessárias para começar um partida (e a começar), o `PlayerNetwork`, que é parte do *Player Prefab* (definido no meu `NetworkManager`) e é responsável por guardar e passar os dados de cada jogador através da *network*, e o `BattleManager`, que faz aprte de um prefab spawnado na *network* e é responsável por gerir o funcionamento de toda a batalha do inicío ao fim.
+Para o funcionamento das batalhas tenho 3 *scripts* essenciais, o `ConnectionManager`, que está sempre em cena e é responsável tanto pelas conexões entre os jogadores, como por agregar todas as informações necessárias para começar uma partida (e a começar), o `PlayerNetwork`, que é parte do *Player Prefab* (definido no meu `NetworkManager`) e é responsável por guardar e passar os dados de cada jogador através da *network*, e o `BattleManager`, que faz parte de um prefab spawnado na *network* e é responsável por gerir o funcionamento de toda a batalha do inicío ao fim.
+
+No *script* `ConnectionManager` fiz isto :
+
+```c#
+private BattleManager _serverBattle;
+private List<PlayerData> _players;
+
+private void Start()
+{
+    _players = new List<PlayerData>();
+}
+
+private void Update()
+{
+    if (_serverOn)
+    {
+        Debug.Log("SERVER IS ON");
+        if (IsServer)
+        {
+            _numberOfClients = NetworkManager.Singleton.ConnectedClientsList.Count;
+            Debug.Log($"Players Connected : {_numberOfClients}/2");
+        }
+
+        // If we are in a matched connection, there is no UI for starting a battle
+        // so we need to start it automatically once we have 2 players conected
+
+        if (IsHost && _matchConnection)
+        {
+            if (_numberOfClients == 2) StartBattle();
+            _matchConnection = false;
+        }
+    }
+}
+
+public bool StartBattle()
+{
+    if (_numberOfClients != 2) return false;
+
+    GetPlayerData();
+
+    GameObject battle = Instantiate(_battleScreen);
+    NetworkObject netBattle = battle.GetComponent<NetworkObject>();
+
+    _serverBattle = battle.GetComponent<BattleManager>();
+
+    _serverBattle.AddPlayers(_players);
+
+    netBattle.Spawn();
+
+    ToogleMainMenuClientRpc(false);
+    return true;
+}
+
+private void GetPlayerData()
+{
+    _players.Clear();
+
+    foreach (ulong clientId in NetworkManager.Singleton.ConnectedClients.Keys)
+    {
+        var playerObject = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject;
+
+        PlayerData pd = playerObject.GetComponent<PlayerNetwork>().Player;
+
+        _players.Add(pd);
+    }
+}
+```
+
+Como podemos ver criei 2 variáveis e 2 métodos importantes :
+
+* A variável `_serverBattle` do tipo `BattleManager`, que guarda uma instância do componente `BattleManager`;
+
+* A variável `_players` do tipo `List<PlayerData>`, que guarda uma lista de informações sobre os dois jogadores conectados, esta depois será usada para fazer o *setup* das batalhas;
+
+* O método `StartBattle()`, que começa por verificar se já estão conectados dois jogadores, se não estiverem, avaba a sua execução aqui, se estiverem, continua a execução. Depois dessa verificação chama o método `GetPlayerData()` e instancia uma cópia no *prefab* das batalhas (que contêm o *script* `BattleManager`) recolhendo também uma referencia ao seu componente `NetworkObject` e  `BattleManager`. Depois de já ter recolhido as referencias, o método passa a lista `_players` ao `BattleManager` e faz *spawn* do *prefab* da batalha na *network*, ou seja, em todos os *clients*;
+
+* O método `GetPlayerData()`, que utiliza o `NetworkManager` para recolher os *PlayerObjects* de todos os *clients*, e recolher `PlayerData` de cada jogador guardada no componente `PlayerNetwork`.
+
+No *script* `PlayerNetwork` fiz isto :
+
+```c#
+public class PlayerNetwork : NetworkBehaviour
+{
+    private NetworkVariable<PlayerData> _player = new NetworkVariable<PlayerData>(default,
+                        NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public PlayerData Player => _player.Value;
+    private PlayerController _ctrl;
+
+    public override void OnNetworkSpawn()
+    {
+        if (!IsOwner) return;
+        _ctrl = FindAnyObjectByType<PlayerController>();
+        SetPlayer();
+        Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    }
+
+    public void SetPlayer()
+    {
+        if (!IsOwner) return;
+
+        Player p = _ctrl.Player;
+        Debug.Log($"Player : {p.Name}");
+
+        string[] moves = p.Creature.CurrentAttackSet.ConvertAll(
+                                                    (m) => m.name
+                                                    .Replace("(Clone)", ""))
+                                                    .ToArray();
+
+        FixedString32Bytes[] movesF = new FixedString32Bytes[4];
+
+        for (int i = 0; i < moves.Length; i++) movesF[i] = moves[i];
+
+        ulong id = NetworkManager.Singleton.LocalClientId;
+
+        _player.Value = new PlayerData(p.Name, p.EXP, id, p.Creature.Name, movesF);
+
+        Debug.Log(p.Name);
+        Debug.Log(p.EXP);
+        Debug.Log(moves[0]);
+    }
+}
+```
+
+Como podemos ver criei 2 variáveis e 1 método importantes :
+
+* Uma `NetworkVariable` (variável sincronizada dentro de toda a *network*) `_player` do tipo `PlayerData`, que guarda todos os dados importantes sobre o jogador ligado a este *prefab*;
+
+* A variável `_ctrl` do tipo `PlayerController`, que guarda uma referência ao jogador original do `PlayerNetwork`, esta variável só é guardada no jogo do próprio jogador (e não sincronizada na *network*) o seu unico propósito é contruir a `PlayerData`;
+
+* O método `SetPlayer()`, que começa por ir buscar ao `_ctrl` uma referência ao seu `Player` para retirar toda a informação relevante dele. Depois de esta informação ser obtida, cria uma nova instância da *struct* `PlayerData` com toda essa informação.
+
+A *struct* `PlayerData` mencionada acima contêm os seguintes membros :
+
+```c#
+public struct PlayerData : INetworkSerializable, IEquatable<PlayerData>
+{
+    public string Name => _name.ToString();
+    public int EXP => _exp;
+    public ulong ID => _id;
+    public string Creature => _creature.ToString();
+    public string Move1 => _move1.ToString();
+    public string Move2 => _move2.ToString();
+    public string Move3 => _move3.ToString();
+    public string Move4 => _move4.ToString();
+    private FixedString32Bytes _name;
+    private int _exp;
+    private ulong _id;
+    private FixedString32Bytes _creature;
+    private FixedString32Bytes _move1;
+    private FixedString32Bytes _move2;
+    private FixedString32Bytes _move3;
+    private FixedString32Bytes _move4;
+
+    public PlayerData(FixedString32Bytes name, int exp, ulong id, FixedString32Bytes creature, params FixedString32Bytes[] moves)
+    {
+        _name = name;
+        _exp = exp;
+        _id = id;
+        _creature = creature;
+        _move1 = moves[0];
+        _move2 = moves[1];
+        _move3 = moves[2];
+        _move4 = moves[3];
+    }
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref _name);
+        serializer.SerializeValue(ref _exp);
+        serializer.SerializeValue(ref _id);
+        serializer.SerializeValue(ref _creature);
+        serializer.SerializeValue(ref _move1);
+        serializer.SerializeValue(ref _move2);
+        serializer.SerializeValue(ref _move3);
+        serializer.SerializeValue(ref _move4);
+    }
+
+    public bool Equals(PlayerData other)
+    {
+        return Name.Equals(other.Name)
+            && EXP == other.EXP
+            && ID == other.ID
+            && Creature.Equals(other.Creature)
+            && Move1.Equals(other.Move1)
+            && Move2.Equals(other.Move2)
+            && Move3.Equals(other.Move3)
+            && Move4.Equals(other.Move4);
+    }
+}
+```
+
+No *script* `BattleManager` fiz isto :
+
+```c
+public class BattleManager : NetworkBehaviour
+{
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+
+
+        if (_playerDataAdd.Count > 0)
+        {
+            foreach (PlayerData p in _playerDataAdd) AddPlayerDatasClientRpc(p);
+
+            SetPlayersClientRpc();
+        }
+        else
+        {
+            Debug.LogWarning("PLAYERS DATA NOT SYNCHORINZED");
+        }
+    }
+
+    private void SetUp()
+    {
+        if (!IsServer) return;
+
+        Debug.LogWarning("BBBBBBBB");
+
+        _playerActions = new List<string>();
+
+        OnTurnPassed += () => Debug.Log($"TURN {Turn}");
+
+        _wfd = new WaitForDialogueEnd(_dialogueManager);
+
+        Debug.LogWarning($"PLAYER 1 ID : {_players[0].ID}");
+        Debug.LogWarning($"PLAYER 2 ID : {_players[1].ID}");
+
+        InitializeUIClientRpc();
+
+        Debug.LogWarning("BBBBBBBB");
+        StartCoroutine(BattleStart());
+    }
+
+    [ClientRpc]
+    private void InitializeUIClientRpc()
+    {
+        foreach (Player p in _players)
+        {
+            if (p.ID == NetworkManager.Singleton.LocalClientId)
+            {
+                _dialogueManager.SetUpDialogueManager();
+                _ui.SetUpUI(p);
+                break;
+            }
+        }
+    }
+
+    public void AddPlayers(List<PlayerData> players)
+    {
+        if (players.Count == 2)
+            foreach (PlayerData p in players) _playerDataAdd.Add(p);
+
+    }
+    [ClientRpc]
+    private void AddPlayerDatasClientRpc(PlayerData p)
+    {
+        _playerDatas.Add(p);
+    }
+
+    [ClientRpc]
+    private void SetPlayersClientRpc()
+    {
+        _players.Clear();
+
+        for (int i = 0; i < 2; i++)
+        {
+            int icapture = i;
+
+            Player newP = _playerBase.CreatePlayer(_playerDatas[i].Name);
+
+            newP.SetEXP(_playerDatas[i].EXP);
+            newP.SetId(_playerDatas[i].ID);
+            newP.LoadCreature(_playerDatas[i].Creature, _playerDatas[i].Move1,
+                                                        _playerDatas[i].Move2,
+                                                        _playerDatas[i].Move3,
+                                                        _playerDatas[i].Move4);
+
+            _players.Add(newP);
+            Debug.Log($"Add player {newP.Name} in {NetworkManager.Singleton.LocalClientId}, idP {newP.ID}");
+
+            OnTurnPassed += () => _players[icapture].Creature.SetTurn(Turn);
+            OnTurnPassed += () => _players[icapture].Creature.CheckModifier();
+        }
+        for (int i = 0; i < 2; i++)
+        {
+            int otherIdx = i == 0 ? 1 : 0;
+            _players[i].Creature.SetOpponent(_players[otherIdx].Creature);
+        }
+
+        SetUp();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void RegisterActionServerRpc(string creature, int attackId, int speed)
+    {
+        Debug.Log($"ACTION REGISTRED FOR {creature}");
+
+        string attack = creature + "|" + attackId + "|" + speed;
+
+        _playerActions.Add(attack);
+    }
+    private Attack GetAction(string creature, int attack)
+    {
+        foreach (Player p in _players)
+        {
+            if (p.Creature.Name == creature)
+            {
+                Debug.Log($"{creature}, long {p.Creature.CurrentAttackSet.Count}, id{attack}");
+                return p.Creature.CurrentAttackSet[attack];
+            }
+        }
+        return null;
+    }
+
+    [ClientRpc]
+    private void DoAttackClientRpc(string attackString)
+    {
+        string[] attackInfo = attackString.Split("|");
+
+        Debug.Log($"{attackInfo[0]} DOING ATTACK {attackInfo[1]}");
+
+        Attack attack = GetAction(attackInfo[0], int.Parse(attackInfo[1]));
+
+        (float damage, float recoil) = attack.DoAttack();
+
+        Debug.Log(damage);
+
+        if (attack.Target.CurrentHP - damage <= 0)
+        {
+            _hasWinner = true;
+            _winnerID = attack.Attacker.Owner.ID;
+            _winnerName = attack.Attacker.Owner.Name;
+        }
+
+        if (damage > 0)
+        {
+            StartCoroutine(attack.Target.ApplyDamage(damage));
+
+            if (recoil > 0) StartCoroutine(attack.Attacker.ApplyDamage(recoil));
+        }
+
+        Debug.Log($"CHECK OPPONENT HP : {attack.Target.CurrentHP}");
+    }
+
+    [ClientRpc]
+    private void UpdateDialogueClientRpc()
+    {
+        _dialogueManager.StartDialogues();
+    }
+
+    [ClientRpc]
+    private void ClearDialogueClientRpc()
+    {
+        _dialogueManager.ClearDialogues();
+    }
+
+    [ClientRpc]
+    private void UpdateUIClientRpc()
+    {
+        _ui.SetUpActionScene();
+    }
+
+    public IEnumerator BattleStart()
+    {
+        Debug.Log("START BATTLE COROUTINE");
+
+        while (!_hasWinner)
+        {
+            UpdateUIClientRpc();
+
+            Debug.Log($"HAS WINNER : {_hasWinner}");
+            Turn++;
+
+            yield return new WaitForPlayerActions(() => _playerActions.Count == _actionsListSize);
+            yield return new WaitForSeconds(1);
+
+            OrganizeActions();
+
+            yield return new WaitForEndOfFrame();
+
+            DoAttackClientRpc(_playerActions[0]);
+
+            UpdateDialogueClientRpc();
+
+            yield return new WaitForEndOfFrame();
+            yield return _wfd;
+
+            DoAttackClientRpc(_playerActions[1]);
+
+            UpdateDialogueClientRpc();
+
+            yield return new WaitForEndOfFrame();
+            yield return _wfd;
+
+            _playerActions.Clear();
+            ClearDialogueClientRpc(); // Clear Dialogues list for all clients to prevent de-synchronization in the texts
+        }
+
+        FinnishBattleClientRpc(_winnerID, _winnerName);
+    }
+    private void OrganizeActions()
+    {
+        if (int.Parse(_playerActions[0].Split("|")[2]) < int.Parse(_playerActions[1].Split("|")[2]))
+        {
+            string tmp = _playerActions[0];
+
+            _playerActions[0] = _playerActions[1];
+            _playerActions[1] = tmp;
+        }
+    }
+
+    [ClientRpc]
+    private void FinnishBattleClientRpc(ulong winnerID, string winnerName)
+    {
+        _dialogueManager.StartDialogues($"{winnerName} WON!");
+
+        if (winnerID == NetworkManager.Singleton.LocalClientId)
+        {
+            PlayerController p = FindAnyObjectByType<PlayerController>(0);
+            p.Player.SetEXP(p.Player.EXP + 50);
+            AccountManager.Instance.SavePlayerData(
+                new Dictionary<string, string>()
+                {
+                    { "EXP", p.Player.EXP.ToString() }
+                }
+            );
+        }
+
+        StartCoroutine(NerworkShutdown());
+    }
+    private IEnumerator NerworkShutdown()
+    {
+        yield return new WaitForSeconds(2);
+
+        ConnectionManager.Instance.ToogleMainMenu(true);
+        NetworkManager.Singleton.Shutdown();
+    }
+
+}
+```
+
+Como podemos ver criei vários métodos importantes, dos quais :
+
+* O método `AddPlayers()` e o método `AddPlayerDatasClientRPC()`, que tratam de sincronizar os dados relativos á lista de `PlayerData` em todos os *clients*. Sendo que o primeiro método recebe os dados e guarda-os na cópia do jogo que está a fazer *hosting* e o segundo tranfere-os para outra lista, sincronizando os dados da mesma nos *clients* por ser um RPC (que é efectuado em todos os *clients*);
+
+* O método `SetPlayersClientRPC()`, que cria em cada *client* instâncias de `Player`com as informações dos jogadores que estão na batalha. Este método também dá a cada `Player` o *ID* do seu *client*, de modo a poder identificar mais tarde quem é o seu *owner*;
+
+* O método `SetUp()`, só executado no servidor, que faz o *setup* de várias variáveis, inicializa o UI em todos os *clients* e no fim começa a corrotina que gere o *loop* da batalha;
+
+* O método `InitializeUIClientRPC()`, que por cada *client* faz o *setup* da UI baseada no seu `Player`, isto é feito comparando o *ID* do `Player` com o *ID* do *client* local (sabido usando o `NetworkManager`) e só executando o método de *setup* do UI quando estes corresponderem;
+
+* O método `BattleStart()`, só executado no servidor, que é uma corrotina que gere o funcionamento do *loop* de jogo de uma batalha. Este usa da variável `_playerActions` para saber quando todos os jogadores selecionaram um ataque, depois organiza-as utilizando o método `OrganizeActions()`. Apartir daí a corrotina utiliza de vários RPCs para efectuar os ataques dos jogadores e atualizar a UI em todos os *clients*. Quando a corrotina detecta que um jogador venceu, através da variável `_hasWinner`, para a execução do *loop* principal e chama o método `FinnishBattleClientRPC()`;
+
+* O método `RegisterActionServerRPC()` e o método `GetAction()`, que tratam de registar no servidor as ações de cada jogador. Sendo que o primeiro é subscrito em botões de UI em cada *client*, passando informações serializadas (numa *string*) dos ataques que são pretendidos, e o segundo é reponsável por traduzir a informação serializada para uma instância de `Attack`;
+
+* O método `DoAttackClientRPC()`, que recebe informações sobre o ataque a realizar e as converte numa instância de `Attack` através do método `GetAction()`, depois realiza o ataque pretendido, extraindo o dano feito e o dano de *recoil*. Com estes valores, primeiro verifica se a criatura atacada vai morrer, se sim muda o valor das variáveis `_hasWinner`, `_winnerID`e `_winnerName` de acordo com quem ganhou, e depois aplica o dano normal e de recoil a cada criatura;
+
+* O método `OrganizeActions()`, que recebe a lista de informações serializadas dos ataques dos jogadores, e a reorganiza de acordo com o valor da sua *speed*;
+
+* O método `FinnishBattleClientRPC()`e o método `NetworkShutdown()`, que tratam de acabar a batalha e desconectar os *clients* da partida. Sendo que o primeiro trata de mostrar no UI o nome do vencedor e de dar ao devido os seus pontos de EXP, e o segundo de desconectar os *clients* da sessão com um pequeno *delay*.
+
+* Os vários métodos de atualização de UI como `UpdateDialogueClientRPC()`, `UpdateUIClientRPC()` e `ClearDialogueClientRPC()`, que apenas servem para fazer mudanças no UI de todos os *clients* em simultâneo.
 
 ### Diagrama de Arquitetura Redes
 
@@ -528,7 +991,7 @@ O funcionamento do decorrer das batalhas não se encontra completo :\
 Existem problemas na sincronização da UI (sendo que o jogador que serve de *Host* tem controlo máximo sobre quando o UI é mudado, causando alguma desincronização quando os jogadores passam o texto em tempos diferentes).
 
 \
-Ás vezes existem problemas nos cálculos do dano, podendo haver divergências entre clientes.
+Ás vezes existem problemas nos cálculos do dano, podendo haver divergências entre *clients*.
 
 ## Bibliografia
 

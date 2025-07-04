@@ -247,7 +247,7 @@ public class BattleManager : NetworkBehaviour
 
             _playerDoneReading = 0;
             _playerActions.Clear();
-            ClearDialogueClientRpc(); // Clear Dialogues list for all clients to prevent de-synchronization
+            ClearDialogueClientRpc(); // Clear Dialogues list for all clients to prevent de-synchronization in the tests
         }
 
         FinnishBattleClientRpc(_winnerID, _winnerName);

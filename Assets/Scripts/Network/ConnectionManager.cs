@@ -71,7 +71,7 @@ public class ConnectionManager : NetworkBehaviour
                 Debug.Log($"Players Connected : {_numberOfClients}/2");
             }
 
-            // If we are in a matched connection, there is no UI for starting a
+            // If we are in a matched connection, there is no UI for starting a a battle
             // so we need to start it automatically once we have 2 players conected
 
             if (IsHost && _matchConnection)

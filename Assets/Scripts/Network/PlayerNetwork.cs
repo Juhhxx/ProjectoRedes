@@ -1,6 +1,5 @@
 using Unity.Netcode;
 using UnityEngine;
-using System.Linq;
 using Unity.Collections;
 
 public class PlayerNetwork : NetworkBehaviour
