@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BattleManager : NetworkBehaviour
 {
@@ -287,6 +288,7 @@ public class BattleManager : NetworkBehaviour
 
         NetworkManager.Singleton.Shutdown();
         ConnectionManager.Instance.ToogleMainMenu(true);
+        SceneManager.LoadScene(0);
     }
 
 }

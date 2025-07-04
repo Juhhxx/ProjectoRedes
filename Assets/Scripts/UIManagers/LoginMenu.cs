@@ -114,6 +114,8 @@ public class LoginMenu : MonoBehaviour, IPlayerDependent
                     gameObject.SetActive(false);
                     _mainMenu.SetActive(true);
                     _loginMenu.SetActive(false);
+                    _inputFieldUsername.text = "";
+                    _inputFieldPassword.text = "";
                     LoadingScreenActivator.Instance.ToogleScreen(false);
                 },
                 (e) =>
@@ -133,6 +135,8 @@ public class LoginMenu : MonoBehaviour, IPlayerDependent
                     gameObject.SetActive(false);
                     _mainMenu.SetActive(true);
                     _loginMenu.SetActive(false);
+                    _inputFieldUsername.text = "";
+                    _inputFieldPassword.text = "";
                     LoadingScreenActivator.Instance.ToogleScreen(false);
                 },
                 (e) =>

@@ -339,9 +339,9 @@ Como podemos ver, agora tenho três métodos :
 
 * O método `StartPrivateClient()`, que faz, na maior parte, o mesmo processo que o `StartPrivateHosting()`, mas ao invés de pedir uma `allocation` nova ao serviço de **Relay**, usa um *join code*, que recebe como parâmetro, e pede para se juntar à *allocation* com o mesmo código. Depois disso o funcionamento do método é igual, até ao final, onde invés de começar um *host*, pede ao `NetworkManager` para começar um *client*.
 
-É de notar que todos estes métodos utilizam do que se chama *asynchronous programming* (visto na utilização das *keywords* *async* e *await*), isto foi algo novo para mim, mas não me pareceu muito difícil. Pelo o que entendi, métodos *async* funcionam mais ou menos como *threads*, permitindo que um programa corra duas tarefas ('Task') ao mesmo tempo (Atenção : Mesmo sendo parecido, um método *async* não criar *threads* novas, ou seja, não é usado *multithreading*), isto permite chamá-los de forma a não pausar o programa quando queremos realizar uma tarefa que demore tempo, bastante comum em programas que necessitam de conexões e comunicações online. Quando queremos que um método *async* espere pela execução de algo, utilizamos a *keyword* *await*, isto apenas pausa a execução desse método, não afectando o resto do programa.
+É de notar que todos estes métodos utilizam o que se chama *asynchronous programming* (visto na utilização das *keywords* *async* e *await*), isto foi algo novo para mim, mas não me pareceu muito difícil. Pelo que entendi, métodos *async* funcionam mais ou menos como *threads*, permitindo que um programa corra duas tarefas ('Task') ao mesmo tempo (Atenção : Mesmo sendo parecido, um método *async* não cria *threads* novas, ou seja, não é usado *multithreading*), isto permite chamá-los de forma a não pausar o programa quando queremos realizar uma tarefa que demore tempo, bastante comum em programas que necessitam de conexões e comunicações online. Quando queremos que um método *async* espere pela execução de algo, utilizamos a *keyword* *await*, isto apenas pausa a execução desse método, não afectando o resto do programa.
 
-Para a implementação da conexão através do **Relay**, tive alguns problemas. Estes vieram totalmente da falta de documentação atualizada da parte do **Unity**. Como estava a utilizar a nova **Multiplayer SDK**, que centraliza todos os serviços do **Unity** (antes separados em vários packages), aconteceram va´rias situações onde código utilizado nos tutorias/discussões que estava a acompanhar, não funcionava, pois a nova SDK mudou algumas das funcionalidades. No entanto, no final consegui resolver tudo sem grandes probelmas.
+Para a implementação da conexão através do **Relay**, tive alguns problemas. Estes vieram totalmente da falta de documentação atualizada da parte do **Unity**. Como estava a utilizar a nova **Multiplayer SDK**, que centraliza todos os serviços do **Unity** (antes separados em vários packages), aconteceram várias situações onde código utilizado nos tutorias/discussões que estava a acompanhar, não funcionava, pois a nova SDK mudou algumas das funcionalidades. No entanto, no final consegui resolver tudo sem grandes problemas.
 
 #### Batalhas Públicas
 
@@ -414,7 +414,7 @@ Estas regras podem ser lidas no seguinte ficheiro *Json* :
 
 ## Análise de Bandwidth
 
-a
+Depois de realizar 1 jogo entre 2 computadores diferentes
 
 ## Como Testar o Jogo
 
@@ -447,7 +447,13 @@ Para testar o **Matchmaking**, o professor pode utilizar o  cheat `Ctrl + P` ou 
 > **Nota**\
 O funcionamento do decorrer das batalhas não se encontra completo :\
 \
-Existem problemas na sincronização da UI (sendo que o jogador que serve de *Host* tem controlo máximo sobre quando o UI é mudado, causando alguma desincronização quando os jogadores passam o texto em tempos diferentes);
+Existem problemas na sincronização da UI (sendo que o jogador que serve de *Host* tem controlo máximo sobre quando o UI é mudado, causando alguma desincronização quando os jogadores passam o texto em tempos diferentes).
+
+\
+Ás vezes existem problemas nos cálculos do dano, podendo haver divergências entre clientes.
+
+\
+Entrar em duas batalhas na mesma sessão de jogo (sem fechar e abrir o programa) pode causar problemas.
 
 ## Bibliografia
 

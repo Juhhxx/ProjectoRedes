@@ -110,5 +110,7 @@ public class LANGameConnection : NetworkBehaviour
         _clientMenu.SetActive(false);
         _mainMenu.SetActive(true);
         _hostObject.SetActive(false);
+        SetMessage("");
+        _joinCodeInput.text = "";
     }
 }
