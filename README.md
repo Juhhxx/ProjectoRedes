@@ -345,6 +345,70 @@ Para a implementação da conexão através do **Relay**, tive alguns problemas.
 
 #### Batalhas Públicas
 
+A implementação de batalhas públicas com *matchmaking* foi o passo mais complicado de todo o projecto. Tentei duas implementações diferentes, das quais só a segunda funcionou.
+
+Na primeira tentativa tentei usar os serviços **Multiplay Hosting** e **Matchmaker** do **Unity**, que me permitiam criar servidores dedicados para o meu projecto que seriam depois alocados através do serviço **Matchmaker**. No entanto esta abordagem provou-se mais difícil do que o esperado, e também mais difícil de testar, sendo que para poder testar tinha de fazer uma build de servidor em **Linux**, fazer upload para o **Multiplay**, e só aí podia testar tudo. Isto revelou-se um processo muito demorado visto que o computador onde estava a realizar o projecto é um *laptop* sem muita capacidade e que a minha internet não é a melhor. Por estes motivos decidi abandonar esta abordagem, pois para além de não estar a conseguir fazê-la funcionar, também não estava a conseguir fazer *debug* dos problemas que ocorriam de forma rápida e prática.
+
+Na segunda tentativa, a que ficou implementada no projecto final, decidi tentar uma recentemente criada abordagem do **Unity** que usava os serviços de **Relay** e **Matchmaker**. Esta abordagem foi mais fácil de implementar e dar *debbug*, visto que usando o **Relay** tinha acesso tanto aos *logs* vindos do *host* como aos vindos dos *clients*, mas devido a ser uma coisa bastante recente no **Unity** a documentação sobre a mesma era absolutamente imprestável e também não existia nenhum conteúdo no **Youtube** sobre. Para  conseguir pô-la a funcionar tive de procurar pelo forum **Unity Discussions** por pessoas que também estavam a tentar fazer o mesmo que eu. Foi por aí que consegui no final ter um sistema funcional que conectasse jogadores baseado em *matchmaking*. Visto que esta foi a única abordagem que funcionou, apenas vou entrar em detalhe sobre ela neste relatório.
+
+Passando agora a explicar mais detalhadamente a implementação da abordagem com o **Relay + Matchmaker**, decidi utilizar na mesma o meu *script* `ConnectionManager`, e acresentei um novo método :
+
+```c#
+public async void FindMatch()
+{
+    if (!AccountManager.Instance.IsLoggedIn) return;
+
+    Debug.Log("Looking for Match");
+
+    LoadingScreenActivator.Instance.ToogleScreen(true);
+
+    await InitializeUnityServices();
+
+    _matchConnection = true;
+
+    try
+    {
+        Debug.Log($"[Network] [Matchmaker Manager] Find Match!");
+
+        // Create matchmaker options to specify the correct Queue to use and the player parameters
+        var matchmakerOptions = new MatchmakerOptions
+        {
+            QueueName = "PlayerEXP",
+            PlayerProperties = new Dictionary<string, PlayerProperty>() {
+            { "LV", new PlayerProperty(_localPlayer.Player.Level.ToString())}
+        }
+        };
+
+        // Create session options to specify number of players and Relay usage
+        var sessionOptions = new SessionOptions() { MaxPlayers = 2 }.WithRelayNetwork();
+
+        // Create a cancellation source for the Session 
+        var cancellationSource = new CancellationTokenSource();
+
+        // Ask the Multiplayer Services to Matchmake a Session based on the previous parameters
+        _matchedSession = await MultiplayerService.Instance.MatchmakeSessionAsync(matchmakerOptions, sessionOptions, cancellationSource.Token);
+
+        // Store the results of the Matchmaked Session
+        StoredMatchmakingResults matchmakingResults = await MatchmakerService.Instance.GetMatchmakingResultsAsync(_matchedSession.Id);
+
+        Debug.Log($"[Network] [Matchmaker Manager] Matchmaking results: {matchmakingResults}");
+
+    }
+    catch (Exception e)
+    {
+        Debug.Log($"[Network] [Matchmaker Manager] Matchmaking failed : {e}!");
+    }
+    finally
+    {
+        LoadingScreenActivator.Instance.ToogleScreen(false);
+    }
+}
+```
+
+Como podemos ver só criei um método :
+
+* O método `FindMatch()`, que começa por inicializar os serviços do **Unity**, assim como os métodos das batalhas privadas. Depois tenta criar um `MatchMakerOptions`, que guarda a informação relacionada ao serviço **Matchmaker** (*Queue* a ser usada, propriedades do jogador importantes para o pareamento), um `SessionOptions`, que guarda informações sobre a sessão de jogo a ser criada (número de jogadores) e é definida como sendo uma sessão de **Relay**, e um `CancellationTokenSource`, que nos deixa parar a sessão criada quando for necessário. Estes três objectos são depois usados para tentar pedir ao serviço de `Multiplayer` para começar uma sessão com **matchmaking** chamando o método `MatchmakeSessionAsync()`. Depois disto o método chama o serviço **Matchmaker** e pede-lhe para obter os resultados da sessão criada, passando o seu *id* como parâmetro. Esta operação esta encapsulada num bloco *try catch*, de froma a controlar os erros que possam acontecer, caso aconteçem é apenas imprimida uma mensagem na consola do **Unity**, ou no caso de uma *build*, esta fica registada no ficheiro *Player.log*.
+
 #### Sincronização das Batalhas
 
 ### Diagrama de Arquitetura Redes
@@ -420,7 +484,7 @@ Depois de realizar alguns jogos, analizei os dados do meu projecto na **Unity Cl
 
 ![a](Images/AverageBytes.png)
 
-Observando os gráficos vi que, por 1 hora de realização de batalhas (não consecutiva), foram consumidos no total 157,3 KiB (161.075,2 bytes), e por pico de KiB mostrado no gráfico não se chegaram a enviar mais de 27 KiB (27.648 bytes). Tendo em conta que durante esta hora foram hosteadas 24 alocações (algumas delas que não chegaram a fazer uma partida completa, pelo menos 5 delas foram só testes de conexão), o uso médio em KiB é estimado como ~10 KiB por batalha.
+Observando os gráficos vi que, por 1 hora de realização de batalhas (não consecutivas), foram consumidos no total 157,3 KiB (161.075,2 bytes), e por pico de KiB mostrado no gráfico não se chegaram a enviar mais de 27 KiB (27.648 bytes). Tendo em conta que durante esta hora foram hosteadas 24 alocações (algumas delas que não chegaram a fazer uma partida completa, pelo menos 5 delas foram só testes de conexão), o uso médio em KiB é estimado como ~10 KiB por batalha.
 
 Conseguimos também ver que o número de KiB em média por usuários simultâneos (CCU) é de 61.5 KiB/CCU.
 

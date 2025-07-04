@@ -126,7 +126,7 @@ public class ConnectionManager : NetworkBehaviour
             // Create session options to specify number of players and Relay usage
             var sessionOptions = new SessionOptions() { MaxPlayers = 2 }.WithRelayNetwork();
 
-            // Create a cancellation source for 
+            // Create a cancellation source for the Session
             var cancellationSource = new CancellationTokenSource();
 
             // Ask the Multiplayer Services to Matchmake a Session based on the previous parameters
