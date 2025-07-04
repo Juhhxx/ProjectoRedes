@@ -411,6 +411,10 @@ Como podemos ver só criei um método :
 
 #### Sincronização das Batalhas
 
+Para fazer a sincronização das batalhas, de forma a permitir que 2 jogadores conseguissem jogar um contra o outro, comecei por pesquisar por vários exemplos em tutorias no **Youtube** e também no projecto dado nas aulas.
+
+Para o funcionamento das batalhass tenho 3 *scripts* essenciais, o `ConnectionManager`, que está sempre em cena e é responsável tanto pelas conexões entre os jogadores, como por agregar todas as informações necessárias para começar um partida (e a começar), o `PlayerNetwork`, que é parte do *Player Prefab* (definido no meu `NetworkManager`) e é responsável por guardar e passar os dados de cada jogador através da *network*, e o `BattleManager`, que faz aprte de um prefab spawnado na *network* e é responsável por gerir o funcionamento de toda a batalha do inicío ao fim.
+
 ### Diagrama de Arquitetura Redes
 
 \
