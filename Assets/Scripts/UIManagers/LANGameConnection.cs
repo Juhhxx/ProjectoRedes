@@ -1,11 +1,10 @@
 using System.Threading.Tasks;
 using TMPro;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 using WebSocketSharp;
 
-public class LANGameConnection : NetworkBehaviour
+public class LANGameConnection : MonoBehaviour
 {
     [Header("General")]
     [Space(5)]
@@ -41,11 +40,19 @@ public class LANGameConnection : NetworkBehaviour
 
         _startBattleButton.onClick.AddListener(() => StartBattle());
     }
+    private void OnEnable()
+    {
+        ConnectionManager.Instance.OnBattleStart += TurnOffUI;
+    }
+    private void OnDisable()
+    {
+        ConnectionManager.Instance.OnBattleStart += TurnOffUI;
+    }
     private void Update()
     {
-        if (IsServer)
+        if (ConnectionManager.Instance.ServerOn)
         {
-            _numberOfClients = NetworkManager.Singleton.ConnectedClientsList.Count;
+            _numberOfClients = ConnectionManager.Instance.NumberOfClients;
             _playersText.text = $"Players Connected : {_numberOfClients}/2";
         }
     }
@@ -100,11 +107,8 @@ public class LANGameConnection : NetworkBehaviour
     private void StartBattle()
     {
         bool result = ConnectionManager.Instance.StartBattle();
-
-        if (result) TurnOffUIClientRpc();
     }
-    [ClientRpc]
-    private void TurnOffUIClientRpc()
+    private void TurnOffUI()
     {
         _hostMenu.SetActive(false);
         _clientMenu.SetActive(false);

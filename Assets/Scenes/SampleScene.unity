@@ -7716,7 +7716,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1128653725}
-  - component: {fileID: 1128653727}
   - component: {fileID: 1128653726}
   m_Layer: 5
   m_Name: Host Menu
@@ -7758,7 +7757,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e5e40d0e2aa37c48a7fc938528e74ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
   _hostObject: {fileID: 1128653724}
   _mainMenu: {fileID: 1976752617}
   _hostButton: {fileID: 1797624411}
@@ -7771,31 +7769,6 @@ MonoBehaviour:
   _joinCodeInput: {fileID: 524212568}
   _joinBattleButton: {fileID: 1438648502}
   _messageText: {fileID: 1815149398}
---- !u!114 &1128653727
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1128653724}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4115255236
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  DeferredDespawnTick: 0
-  Ownership: 1
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 0
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
-  SyncOwnerTransformWhenParented: 1
-  AllowOwnerToParent: 0
 --- !u!1 &1135006882
 GameObject:
   m_ObjectHideFlags: 0

@@ -26,9 +26,12 @@ public class ConnectionManager : NetworkBehaviour
 
     // Server Variables
     private int _numberOfClients;
+    public int NumberOfClients => _numberOfClients;
     private bool _serverOn = false;
+    public bool ServerOn => _serverOn;
     private bool _matchConnection = false;
     private ISession _matchedSession;
+    public Action OnBattleStart;
 
     public static ConnectionManager Instance { get; private set; }
 
@@ -39,14 +42,24 @@ public class ConnectionManager : NetworkBehaviour
     private void Start()
     {
         _players = new List<PlayerData>();
-
+    }
+    private void OnEnable()
+    {
         NetworkManager.Singleton.OnServerStarted += () => _serverOn = true;
         NetworkManager.Singleton.OnServerStopped += (bool i) => _serverOn = false;
 
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
-
     }
+    private void OnDisable()
+    {
+        NetworkManager.Singleton.OnServerStarted -= () => _serverOn = true;
+        NetworkManager.Singleton.OnServerStopped -= (bool i) => _serverOn = false;
+
+        NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+    }
+
     private void Update()
     {
         if (_serverOn)
@@ -60,7 +73,7 @@ public class ConnectionManager : NetworkBehaviour
 
             // If we are in a matched connection, there is no UI for starting a
             // so we need to start it automatically once we have 2 players conected
-            
+
             if (IsHost && _matchConnection)
             {
                 if (_numberOfClients == 2) StartBattle();
@@ -212,6 +225,8 @@ public class ConnectionManager : NetworkBehaviour
     }
     private void GetPlayerData()
     {
+        _players.Clear();
+
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClients.Keys)
         {
             var playerObject = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject;
@@ -225,6 +240,7 @@ public class ConnectionManager : NetworkBehaviour
     [ClientRpc]
     private void ToogleMainMenuClientRpc(bool onoff)
     {
+        OnBattleStart();
         _mainMenu.SetActive(onoff);
     }
 
