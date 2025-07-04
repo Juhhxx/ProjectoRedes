@@ -420,11 +420,11 @@ Depois de realizar alguns jogos, analizei os dados do meu projecto na **Unity Cl
 
 ![a](Images/AverageBytes.png)
 
-Obeservando os gráficos vi que, por 1 hora de realização de batalhas (não consecutivas), foram consumidos no total 157,3 KiB (161.075,2 bytes), e por cada sessão de jogo individual não se chegaram a gastar mais de 27 KiB (27.648 bytes). Tendo em conta que durante esta hora foram hosteadas 24 alocações (algumas delas que não chegaram a fazer uma partida completa), o uso médio em KiB é estimado como ~10 KiB por batalha.
+Observando os gráficos vi que, por 1 hora de realização de batalhas (não consecutiva), foram consumidos no total 157,3 KiB (161.075,2 bytes), e por pico de KiB mostrado no gráfico não se chegaram a enviar mais de 27 KiB (27.648 bytes). Tendo em conta que durante esta hora foram hosteadas 24 alocações (algumas delas que não chegaram a fazer uma partida completa, pelo menos 5 delas foram só testes de conexão), o uso médio em KiB é estimado como ~10 KiB por batalha.
 
-Conseguimos também ver que o número de KiB em médio por usuários simultâneos (CCU) é de 61.5 KiB/CCU.
+Conseguimos também ver que o número de KiB em média por usuários simultâneos (CCU) é de 61.5 KiB/CCU.
 
-Nenhum destes valores chega perto de atingir o valor dado pelo *tier* grátis do serviço de **Relay** do **Unity**. Assim acabei por concluir que o jogo podia ficar de pé vários meses (tendo em conta que também não estou á espera de uma afluencia gigante de jogadores) apenas utilizando os serviços grátis do **Unity** sem problemas.
+Nenhum destes valores chega perto de atingir o valor máximo dado pelo *tier* grátis do serviço de **Relay** do **Unity**. Assim acabei por concluir que o jogo podia ficar de pé vários meses (tendo em conta que também não estou à espera de uma afluência gigante de jogadores) apenas utilizando os serviços grátis do **Unity** sem problemas.
 
 ## Como Testar o Jogo
 
