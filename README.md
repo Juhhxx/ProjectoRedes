@@ -411,11 +411,16 @@ Como podemos ver só criei um método :
 
 Para informações mais específicas em relação a como funciona o *matchmaking*, refir à secção **Matchmaking**.
 
+#### Diagrama de Arquitetura Redes
+
+\
+![a](Images/DiagramRedes.png)
+
 #### Sincronização das Batalhas
 
 Para fazer a sincronização das batalhas, de forma a permitir que 2 jogadores conseguissem jogar um contra o outro, comecei por pesquisar por vários exemplos em tutorias no **Youtube** e também no projecto dado nas aulas.
 
-Para o funcionamento das batalhas tenho 3 *scripts* essenciais, o `ConnectionManager`, que está sempre em cena e é responsável tanto pelas conexões entre os jogadores, como por agregar todas as informações necessárias para começar uma partida (e a começar), o `PlayerNetwork`, que é parte do *Player Prefab* (definido no meu `NetworkManager`) e é responsável por guardar e passar os dados de cada jogador através da *network*, e o `BattleManager`, que faz parte de um prefab spawnado na *network* e é responsável por gerir o funcionamento de toda a batalha do inicío ao fim.
+Para o funcionamento das batalhas tenho 3 *scripts* essenciais, o `ConnectionManager`, que está sempre em cena e é responsável tanto pelas conexões entre os jogadores, como por agregar todas as informações necessárias para começar uma partida, como por realmente fazê-lo, o `PlayerNetwork`, que é parte do *Player Prefab* (definido no meu `NetworkManager`) e é responsável por guardar e passar os dados de cada jogador através da *network*, e o `BattleManager`, que faz parte de um prefab spawnado na *network* e é responsável por gerir o funcionamento de toda a batalha do inicío ao fim.
 
 No *script* `ConnectionManager` fiz isto :
 
@@ -490,7 +495,7 @@ Como podemos ver criei 2 variáveis e 2 métodos importantes :
 
 * A variável `_players` do tipo `List<PlayerData>`, que guarda uma lista de informações sobre os dois jogadores conectados, esta depois será usada para fazer o *setup* das batalhas;
 
-* O método `StartBattle()`, que começa por verificar se já estão conectados dois jogadores, se não estiverem, avaba a sua execução aqui, se estiverem, continua a execução. Depois dessa verificação chama o método `GetPlayerData()` e instancia uma cópia no *prefab* das batalhas (que contêm o *script* `BattleManager`) recolhendo também uma referencia ao seu componente `NetworkObject` e  `BattleManager`. Depois de já ter recolhido as referencias, o método passa a lista `_players` ao `BattleManager` e faz *spawn* do *prefab* da batalha na *network*, ou seja, em todos os *clients*;
+* O método `StartBattle()`, que começa por verificar se já estão conectados dois jogadores, se não estiverem, acaba a sua execução aqui, se estiverem, continua a execução. Depois dessa verificação chama o método `GetPlayerData()` e instancia uma cópia no *prefab* das batalhas (que contêm o *script* `BattleManager`) recolhendo também uma referencia ao seu componente `NetworkObject` e  `BattleManager`. Depois de já ter recolhido as referências, o método passa a lista `_players` ao `BattleManager` e faz *spawn* do *prefab* da batalha na *network*, ou seja, em todos os *clients*;
 
 * O método `GetPlayerData()`, que utiliza o `NetworkManager` para recolher os *PlayerObjects* de todos os *clients*, e recolher `PlayerData` de cada jogador guardada no componente `PlayerNetwork`.
 
@@ -539,11 +544,11 @@ public class PlayerNetwork : NetworkBehaviour
 }
 ```
 
-Como podemos ver criei 2 variáveis e 1 método importantes :
+Como podemos ver criei 2 variáveis e 1 método importante :
 
 * Uma `NetworkVariable` (variável sincronizada dentro de toda a *network*) `_player` do tipo `PlayerData`, que guarda todos os dados importantes sobre o jogador ligado a este *prefab*;
 
-* A variável `_ctrl` do tipo `PlayerController`, que guarda uma referência ao jogador original do `PlayerNetwork`, esta variável só é guardada no jogo do próprio jogador (e não sincronizada na *network*) o seu unico propósito é contruir a `PlayerData`;
+* A variável `_ctrl` do tipo `PlayerController`, que guarda uma referência ao jogador original do `PlayerNetwork`, esta variável só é guardada no jogo do próprio jogador (e não sincronizada na *network*) o seu único propósito é construir a `PlayerData`;
 
 * O método `SetPlayer()`, que começa por ir buscar ao `_ctrl` uma referência ao seu `Player` para retirar toda a informação relevante dele. Depois de esta informação ser obtida, cria uma nova instância da *struct* `PlayerData` com toda essa informação.
 
@@ -860,15 +865,15 @@ public class BattleManager : NetworkBehaviour
 
 Como podemos ver criei vários métodos importantes, dos quais :
 
-* O método `AddPlayers()` e o método `AddPlayerDatasClientRPC()`, que tratam de sincronizar os dados relativos á lista de `PlayerData` em todos os *clients*. Sendo que o primeiro método recebe os dados e guarda-os na cópia do jogo que está a fazer *hosting* e o segundo tranfere-os para outra lista, sincronizando os dados da mesma nos *clients* por ser um RPC (que é efectuado em todos os *clients*);
+* O método `AddPlayers()` e o método `AddPlayerDatasClientRPC()`, que tratam de sincronizar os dados relativos à lista de `PlayerData` em todos os *clients*. Sendo que o primeiro método recebe os dados e guarda-os na cópia do jogo que está a fazer *hosting* e o segundo transfere-os para outra lista, sincronizando os dados da mesma nos *clients* por ser um RPC (que é efectuado em todos os *clients*);
 
 * O método `SetPlayersClientRPC()`, que cria em cada *client* instâncias de `Player`com as informações dos jogadores que estão na batalha. Este método também dá a cada `Player` o *ID* do seu *client*, de modo a poder identificar mais tarde quem é o seu *owner*;
 
 * O método `SetUp()`, só executado no servidor, que faz o *setup* de várias variáveis, inicializa o UI em todos os *clients* e no fim começa a corrotina que gere o *loop* da batalha;
 
-* O método `InitializeUIClientRPC()`, que por cada *client* faz o *setup* da UI baseada no seu `Player`, isto é feito comparando o *ID* do `Player` com o *ID* do *client* local (sabido usando o `NetworkManager`) e só executando o método de *setup* do UI quando estes corresponderem;
+* O método `InitializeUIClientRPC()`, que por cada *client* faz o *setup* da UI baseada no seu `Player`, isto é feito comparando o *ID* do `Player` com o *ID* do *client* local (descoberto usando o `NetworkManager`) e só executando o método de *setup* do UI quando estes corresponderem;
 
-* O método `BattleStart()`, só executado no servidor, que é uma corrotina que gere o funcionamento do *loop* de jogo de uma batalha. Este usa da variável `_playerActions` para saber quando todos os jogadores selecionaram um ataque, depois organiza-as utilizando o método `OrganizeActions()`. Apartir daí a corrotina utiliza de vários RPCs para efectuar os ataques dos jogadores e atualizar a UI em todos os *clients*. Quando a corrotina detecta que um jogador venceu, através da variável `_hasWinner`, para a execução do *loop* principal e chama o método `FinnishBattleClientRPC()`;
+* O método `BattleStart()`, só executado no servidor, que é uma corrotina que gere o funcionamento do *loop* de jogo de uma batalha. Este usa a variável `_playerActions` para saber quando todos os jogadores selecionaram um ataque, depois organiza-as utilizando o método `OrganizeActions()`. A partir daí a corrotina utiliza vários RPCs para efectuar os ataques dos jogadores e atualizar a UI em todos os *clients*. Quando a corrotina detecta que um jogador venceu, através da variável `_hasWinner`, para a execução do *loop* principal e chama o método `FinnishBattleClientRPC()`;
 
 * O método `RegisterActionServerRPC()` e o método `GetAction()`, que tratam de registar no servidor as ações de cada jogador. Sendo que o primeiro é subscrito em botões de UI em cada *client*, passando informações serializadas (numa *string*) dos ataques que são pretendidos, e o segundo é reponsável por traduzir a informação serializada para uma instância de `Attack`;
 
@@ -880,12 +885,7 @@ Como podemos ver criei vários métodos importantes, dos quais :
 
 * Os vários métodos de atualização de UI como `UpdateDialogueClientRPC()`, `UpdateUIClientRPC()` e `ClearDialogueClientRPC()`, que apenas servem para fazer mudanças no UI de todos os *clients* em simultâneo.
 
-É de notar que muitos destes métodos são RPCs (Remote Procedure Calls) que basicamente nos deixam ter um método que pode ser chamado pelo servidor, e executado em todos os *clients* (*ClientRPCs*), ou por um *client* e executado no servidor. Isto é útil quando queremos fazer sincronização de eventos ou variáveis ou quando queremos que o servidor tenha de dar permissão aos *clients* para poderem fazer algo.
-
-### Diagrama de Arquitetura Redes
-
-\
-![a](Images/DiagramRedes.png)
+É de notar que muitos destes métodos são RPCs (Remote Procedure Calls) que basicamente nos deixam ter um método que pode ser chamado pelo servidor, e executado em todos os *clients* (*ClientRPCs*), ou por um *client* e executado no servidor (*ServerRPCs*). Isto é útil quando queremos fazer sincronização de eventos ou variáveis ou quando queremos que o servidor tenha de dar permissão aos *clients* para poderem fazer algo.
 
 ### Matchmaking
 
